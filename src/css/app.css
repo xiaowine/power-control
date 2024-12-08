@@ -1,0 +1,368 @@
+/* 全局样式 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f8f9fa; /* 背景色 */
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  overflow-x: hidden; /* 防止横向滚动 */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.power-control-system {
+  font-family: Arial, sans-serif;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px; /* 模块间距 */
+  padding: 20px;
+  background-color: #ffffff;
+  color: #333;
+  width: 100%; /* 调整宽度 */
+  max-width: 1400px; /* 限制最大宽度 */
+  box-sizing: border-box;
+  margin: 0 auto; /* 居中对齐 */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  grid-auto-flow: dense; /* 自动填充空白区域 */
+}
+
+/* 模块容器样式 */
+.section {
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 15px; /* 内边距 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 标题样式 */
+h3 {
+  margin: 0 0 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 8px;
+}
+
+/* 表单布局和间距 */
+label {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  margin-bottom: 15px;
+  color: #495057;
+}
+
+input[type="number"],
+select {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 0.95em;
+  margin-left: 10px;
+  margin-right: 10px; /* 增加两侧间距 */
+  transition: border-color 0.3s ease;
+}
+
+input[type="number"]:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* 隐藏input输入数字调节大小的按钮 */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* 按钮样式 */
+button {
+  display: inline-block;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  margin: 10px 5px; /* 优化按钮间距 */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* 状态指示点样式 */
+.status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: red;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.status-dot.connected {
+  background-color: green;
+}
+
+/* 输出参数样式 */
+.output-parameters .value {
+  font-size: 3em;
+  font-weight: bold;
+  color: #007bff;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* 电源状态样式 */
+.power-status div {
+  margin-bottom: 12px;
+  font-size: 1em;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+/* 文本区域样式 */
+textarea {
+  width: 100%; /* 始终占满父容器的宽度 */
+  max-width: 100%; /* 防止超过父容器宽度 */
+  height: 100px; /* 默认高度 */
+  max-height: 300px; /* 限制最大高度 */
+  padding: 12px; /* 内边距 */
+  border: 1px solid #ced4da; /* 边框样式 */
+  border-radius: 5px; /* 圆角 */
+  font-size: 1em; /* 字体大小 */
+  resize: vertical; /* 仅允许纵向调整大小 */
+  overflow-y: auto; /* 内容超出时滚动 */
+  background-color: #f8f9fa; /* 背景色 */
+  color: #495057; /* 字体颜色 */
+  box-sizing: border-box; /* 包括内边距在宽度计算中 */
+  margin-bottom: 10px; /* 与其他元素的间距 */
+}
+
+/* 为 textarea 的 placeholder 提供样式 */
+textarea::placeholder {
+  color: #adb5bd; /* 提示文字颜色 */
+  font-style: italic; /* 斜体 */
+}
+
+/* 按钮容器间距 */
+button + button {
+  margin-left: 10px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .power-control-system {
+    grid-template-columns: 1fr; /* 小屏幕单列布局 */
+    padding: 10px;
+    gap: 10px; /* 减少模块间距 */
+  }
+
+  .section {
+    padding: 10px; /* 缩小模块内边距 */
+  }
+
+  button {
+    padding: 10px 15px; /* 缩小按钮内边距 */
+    font-size: 0.9em; /* 缩小按钮字体 */
+  }
+
+  input[type="number"],
+  select {
+    padding: 8px 10px; /* 缩小输入框内边距 */
+    font-size: 0.9em; /* 缩小输入框字体 */
+  }
+}
+
+@media (max-width: 1200px) {
+  .power-control-system {
+    grid-template-columns: 1fr 1fr; /* 中等屏幕双列布局 */
+  }
+}
+
+@media (min-width: 1400px) {
+  .power-control-system {
+    gap: 25px; /* 增加模块间距 */
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background-color: #121212; /* 背景色 */
+    color: #e0e0e0; /* 字体颜色 */
+  }
+
+  .power-control-system {
+    background-color: #1e1e1e; /* 背景色 */
+    color: #e0e0e0; /* 字体颜色 */
+  }
+
+  .section {
+    background-color: #2c2c2c; /* 背景色 */
+    border-color: #3c3c3c; /* 边框颜色 */
+  }
+
+  h3 {
+    color: #e0e0e0; /* 标题颜色 */
+    border-bottom-color: #3c3c3c; /* 边框颜色 */
+  }
+
+  input[type="number"],
+  select {
+    background-color: #3c3c3c; /* 背景色 */
+    color: #e0e0e0; /* 字体颜色 */
+    border-color: #4c4c4c; /* 边框颜色 */
+  }
+
+  input[type="number"]:focus,
+  select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  button {
+    background-color: #007bff;
+    color: white;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  .status-dot {
+    background-color: red;
+  }
+
+  .status-dot.connected {
+    background-color: green;
+  }
+
+  .output-parameters .value {
+    color: #007bff;
+  }
+
+  .error {
+    color: red;
+  }
+
+  textarea {
+    background-color: #3c3c3c; /* 背景色 */
+    color: #e0e0e0; /* 字体颜色 */
+    border-color: #4c4c4c; /* 边框颜色 */
+  }
+
+  textarea::placeholder {
+    color: #adb5bd; /* 提示文字颜色 */
+  }
+}
+
+.info {
+  height: 200px; /* 固定高度 */
+  overflow-y: auto;
+  overflow-x: hidden; /* 防止横向滚动 */
+  border: 1px solid #ccc;
+  padding: 10px;
+  list-style-type: none;
+  word-wrap: break-word; /* 自动换行 */
+  word-break: break-all; /* 强制换行 */
+  box-sizing: border-box; /* 包括滚动条宽度在内 */
+  max-height: 200px;
+  padding-right: 10px;
+}
+
+.info::-webkit-scrollbar {
+  width: 8px;
+}
+
+.info::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.info::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.info::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.info li {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+  word-break: break-word; /* 确保内容不会影响宽度 */
+  display: flex;
+  align-items: flex-start; /* 确保抬头和消息内容顶部对齐 */
+}
+
+.info li:last-child {
+  border-bottom: none;
+}
+
+.info li.sent .type {
+  color: rgb(103, 202, 103);
+}
+
+.info li.received .type {
+  color: rgb(68, 131, 190);
+}
+
+.type {
+  font-weight: bold;
+  margin-right: 10px; /* 确保抬头和消息内容有间距 */
+}
+
+.message {
+  flex: 1; /* 确保消息内容占据剩余空间 */
+}
+
+.github-logo {
+  transition: transform 0.3s;
+  display: block;
+  margin: 10px auto;
+  width: 50px;
+  height: 50px;
+}
+
+.github-logo:hover {
+  transform: scale(1.1);
+}
