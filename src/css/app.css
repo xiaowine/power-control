@@ -34,6 +34,7 @@ body {
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
   grid-auto-flow: dense; /* 自动填充空白区域 */
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* 模块容器样式 */
@@ -46,6 +47,8 @@ body {
   backdrop-filter: blur(10px);
   padding: var(--section-padding); /* 内边距 */
   box-shadow: var(--shadow-sm);
+  transition: transform 0.3s var(--animate-timing),
+              box-shadow 0.3s var(--animate-timing);
 }
 
 .section:hover {
@@ -118,6 +121,8 @@ button {
   cursor: pointer;
   margin: 10px 5px; /* 优化按钮间距 */
   transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: transform 0.15s var(--animate-timing),
+              background-color 0.3s var(--animate-timing);
 }
 
 button:hover {
@@ -128,6 +133,10 @@ button:hover {
 button:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
+}
+
+button:active {
+  transform: scale(0.95);
 }
 
 /* 状态指示点样式 */
@@ -158,6 +167,7 @@ button:disabled {
 .power-status div {
   margin-bottom: 12px;
   font-size: 1em;
+  transition: color 0.3s var(--animate-timing);
 }
 
 .error {
@@ -341,6 +351,8 @@ button + button {
   word-break: break-word; /* 确保内容不会影响宽度 */
   display: flex;
   align-items: flex-start; /* 确保抬头和消息内容顶部对齐 */
+  animation: slideIn 0.3s ease-out;
+  transform-origin: top;
 }
 
 .info li:last-child {
@@ -410,6 +422,8 @@ button + button {
   --container-padding: 24px;
   --grid-gap: 24px;
   --section-padding: 20px;
+  --animate-duration: 0.3s;
+  --animate-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 深色模式变量 */
@@ -458,8 +472,9 @@ button + button {
   align-items: center;
   gap: 12px;
   padding: 8px 12px; /* 增加水平内边距 */
-  flex: 1; /* 允许占据剩余空间 */
+  flex: 1; /* 允许占据 */
   min-width: 0; /* 防止内容溢出 */
+  transition: background-color 0.3s var(--animate-timing);
 }
 
 .connection-status span {
@@ -478,6 +493,7 @@ button + button {
   transition: var(--transition);
   flex-shrink: 0;
   display: inline-block;
+  animation: breathe 2s infinite;
 }
 
 /* 添加连接状态样式 */
@@ -524,7 +540,7 @@ button + button {
   padding: 10px 20px;
   min-width: 120px; /* 增加最小宽度 */
   white-space: nowrap;
-  flex-shrink: 0; /* 防止按钮被压缩 */
+  flex-shrink: 0; /* 止��被压缩 */
 }
 
 /* 响应式调整 */
@@ -584,7 +600,8 @@ button + button {
 }
 
 .output-value {
-  display: block;
+  display: inline-block;
+  width: 100%;
   font-size: 2.5em;
   font-weight: 700;
   color: var(--primary-color);

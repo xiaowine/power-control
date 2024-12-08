@@ -17,15 +17,15 @@
 			<div class="output-grid">
 				<div class="output-card">
 					<span class="output-label">电压</span>
-					<span class="output-value"
-						>{{ formatNumber(nowVoltage, 2) }}
+					<span class="output-value">
+						{{ formatNumber(nowVoltage, 2) }}
 						<small>V</small>
 					</span>
 				</div>
 				<div class="output-card">
 					<span class="output-label">电流</span>
-					<span class="output-value"
-						>{{ formatNumber(nowCurrent, 2) }}
+					<span class="output-value">
+						{{ formatNumber(nowCurrent, 2) }}
 						<small>A</small>
 					</span>
 				</div>
