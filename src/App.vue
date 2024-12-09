@@ -76,29 +76,76 @@
 		</div>
 		<div class="section power-status">
 			<h3>电源状态</h3>
-			<div>
-				<div>工作模式: {{ workMode }}</div>
-				<div>工作状态: {{ workStatus }}</div>
-				<div>输出模式: {{ mode }}</div>
-				<div>
-					故障类型: <span class="error">{{ faultType }}</span>
+			<div class="status-tabs">
+				<div class="status-tab">
+					<div class="status-label">工作模式</div>
+					<div class="status-options">
+						<span
+							v-for="mode in ['BUCK', 'BOOST', 'MIXED']"
+							:key="mode"
+							:class="['status-option', { active: workMode === mode }]"
+						>
+							{{ mode }}
+						</span>
+					</div>
+				</div>
+
+				<div class="status-tab">
+					<div class="status-label">工作状态</div>
+					<div class="status-options">
+						<span
+							v-for="status in ['未工作', '工作中']"
+							:key="status"
+							:class="['status-option', { active: workStatus === status }]"
+						>
+							{{ status }}
+						</span>
+					</div>
+				</div>
+
+				<div class="status-tab">
+					<div class="status-label">输出模式</div>
+					<div class="status-options">
+						<span
+							v-for="outputMode in ['CV', 'CC']"
+							:key="outputMode"
+							:class="['status-option', { active: mode === outputMode }]"
+						>
+							{{ outputMode }}
+						</span>
+					</div>
+				</div>
+
+				<div class="status-tab">
+					<div class="status-label">故障类型</div>
+					<div class="status-options error-options">
+						<span
+							v-for="error in ['正常', '掉线', '过流', '过压', '过温']"
+							:key="error"
+							:class="['status-option', { active: faultType === error }]"
+						>
+							{{ error }}
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="section">
 			<h3>发送/接收数据</h3>
-			<ul class="info">
-				<li
-					v-for="(item, index) in dataHistory"
-					:key="index"
-					:class="[item.type, 'clickable']"
-					@click="showDataDetail(item)"
-				>
-					<span class="type">{{ item.type === 'sent' ? '发送' : '接收' }}:</span>
-					<span class="message">{{ item.message }}</span>
-				</li>
-			</ul>
-			<button @click="clearDataHistory">清除</button>
+			<div class="info-container">
+				<ul class="info">
+					<li
+						v-for="(item, index) in dataHistory"
+						:key="index"
+						:class="[item.type, 'clickable']"
+						@click="showDataDetail(item)"
+					>
+						<span class="type">{{ item.type === 'sent' ? '发送' : '接收' }}:</span>
+						<span class="message">{{ item.message }}</span>
+					</li>
+				</ul>
+				<button class="clear-btn" @click="clearDataHistory" title="清除历史记录"></button>
+			</div>
 		</div>
 		<div class="section about">
 			<div class="avatar-container">
@@ -164,7 +211,7 @@
 	const workMode = ref('BUCK');
 	const workStatus = ref('未工作');
 	const mode = ref('CC');
-	const faultType = ref('电源掉线');
+	const faultType = ref('正常');
 	const dataHistory = ref([]);
 	const oldVoltage = ref(24.0);
 	const oldCurrent = ref(5.0);
