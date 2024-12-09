@@ -755,7 +755,7 @@ button + button {
   }
 }
 
-/* 打印模式优化 */
+/* 打印模���优化 */
 @media print {
   .power-control-system {
     display: block;

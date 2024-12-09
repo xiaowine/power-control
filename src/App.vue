@@ -156,52 +156,14 @@
 			</a>
 			<div class="author-name">xiao_wine</div>
 		</div>
-		<!-- 定义底部按钮 -->
-		<!-- <Dialog v-model="showCustomDialog" title="自定义弹窗">
-			<p>这是一个自定义底部按钮的弹窗</p>
-			<template #footer>
-				<button @click="showCustomDialog = false">关闭</button>
-				<button @click="handleConfirm">保存</button>
-			</template>
-		</Dialog> -->
-
-		<!-- 触发按钮 -->
-		<!-- <button @click="showCustomDialog = true">打开自定义弹窗</button> -->
-
-		<!-- 数据详情弹窗 -->
-		<Dialog v-model="showDataDialog" title="数据详情" width="500px" class="data-dialog">
-			<div v-if="selectedData" class="data-detail">
-				<div class="detail-item">
-					<span class="detail-label">类型:</span>
-					<span class="detail-value">{{ selectedData.type === 'sent' ? '发送' : '接收' }}</span>
-				</div>
-				<div class="detail-item">
-					<span class="detail-label">时间:</span>
-					<span class="detail-value">{{ selectedData.timestamp }}</span>
-				</div>
-				<div class="detail-item">
-					<span class="detail-label">数据:</span>
-					<span class="detail-value">{{ selectedData.message }}</span>
-				</div>
-				<div class="detail-item">
-					<span class="detail-label">解释:</span>
-					<span class="detail-value">AAAAAAAA</span>
-				</div>
-			</div>
-			<template #footer>
-				<button @click="showDataDialog = false">关闭</button>
-			</template>
-		</Dialog>
 	</div>
 </template>
 
 <script setup>
-	import { ref, onMounted, onUnmounted } from 'vue';
-	import Dialog from './components/Dialog.vue';
+	import { ref, onMounted, onUnmounted, h } from 'vue';
+	import { showDialog, showAlert } from './utils/dialog';
 
 	// 状态变量
-	const selectedData = ref(null);
-	const showDataDialog = ref(false);
 	const device = ref();
 	const isConnected = ref(false);
 	const targetVoltage = ref(24.0);
@@ -215,7 +177,6 @@
 	const dataHistory = ref([]);
 	const oldVoltage = ref(24.0);
 	const oldCurrent = ref(5.0);
-	const showCustomDialog = ref(false);
 
 	// 非响应式变量
 	let reader;
@@ -267,7 +228,7 @@
 
 	const toggleConnection = async () => {
 		if (!('serial' in navigator)) {
-			alert('浏览器不支持');
+			showAlert('浏览器不支持串口通信');
 			return;
 		}
 		if (isConnected.value) {
@@ -296,7 +257,7 @@
 			reader.releaseLock();
 		} catch (error) {
 			console.error('Failed to open serial port:', error);
-			alert('串口打开失败');
+			showAlert('串口打开失败，请检查设备连接');
 			device.value = undefined;
 			isConnected.value = false;
 		}
@@ -327,7 +288,7 @@
 
 	const checkInvalidData = () => {
 		if (invalidDataCount > 10) {
-			alert('收到过多无效数据，关闭串口');
+			showAlert('收到过多无效数据，已自动关闭串口');
 			disconnectDevice();
 			invalidDataCount = 0;
 			invalidDataTimer = null;
@@ -336,7 +297,7 @@
 			invalidDataTimer = null;
 			invalidDataTimer = setTimeout(() => {
 				if (invalidDataCount > 10) {
-					alert('收到过多无效数据，关闭串口');
+					showAlert('收到过多无效数据，已自动关闭串口');
 					disconnectDevice();
 				}
 				invalidDataCount = 0;
@@ -493,13 +454,46 @@
 		element.classList.add('fade-in');
 	};
 
-	const handleConfirm = () => {
-		showCustomDialog.value = false;
-	};
-
 	const showDataDetail = (item) => {
-		selectedData.value = item;
-		showDataDialog.value = true;
+		const dialog = showDialog({
+			title: '数据详情',
+			width: '500px',
+			content: {
+				setup() {
+					return () =>
+						h('div', { class: 'data-detail' }, [
+							h('div', { class: 'detail-item' }, [
+								h('span', { class: 'detail-label' }, '类型:'),
+								h('span', { class: 'detail-value' }, item.type === 'sent' ? '发送' : '接收'),
+							]),
+							h('div', { class: 'detail-item' }, [
+								h('span', { class: 'detail-label' }, '时间:'),
+								h('span', { class: 'detail-value' }, item.timestamp),
+							]),
+							h('div', { class: 'detail-item' }, [
+								h('span', { class: 'detail-label' }, '数据:'),
+								h('span', { class: 'detail-value' }, item.message),
+							]),
+							h('div', { class: 'detail-item' }, [
+								h('span', { class: 'detail-label' }, '解释:'),
+								h('span', { class: 'detail-value' }, 'AAAAAAAA'),
+							]),
+						]);
+				},
+			},
+			footer: {
+				setup() {
+					return () =>
+						h(
+							'button',
+							{
+								onClick: () => dialog.close(),
+							},
+							'关闭'
+						);
+				},
+			},
+		});
 	};
 </script>
 
