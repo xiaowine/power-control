@@ -164,7 +164,14 @@ button:active {
 }
 
 /* 电源状态样式 */
-.power-status div {
+.power-status > div {
+  width: 50%;
+  margin: 0 auto;
+  text-align: left;
+  min-height: 100px;  /* 给一个合适的最小高度 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin-bottom: 12px;
   font-size: 1em;
   transition: color 0.3s var(--animate-timing);
@@ -348,15 +355,21 @@ button + button {
 .info li {
   padding: 5px 0;
   border-bottom: 1px solid var(--border-color);
-  word-break: break-word; /* 确保内容不会影响宽度 */
+  word-break: break-word;
   display: flex;
-  align-items: flex-start; /* 确保抬头和消息内容顶部对齐 */
+  align-items: flex-start;
   animation: slideIn 0.3s ease-out;
   transform-origin: top;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .info li:last-child {
   border-bottom: none;
+}
+
+.info li:hover {
+  background-color: var(--bg-secondary);
 }
 
 .info li.sent .type {
@@ -471,7 +484,7 @@ button + button {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px; /* 增加水平内边距 */
+  padding: 8px 12px; /* 增加边距 */
   flex: 1; /* 允许占据 */
   min-width: 0; /* 防止内容溢出 */
   transition: background-color 0.3s var(--animate-timing);
@@ -714,98 +727,34 @@ button + button {
 }
 
 .avatar-container {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.avatar-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.github-icon {
-  width: 20px;
-  height: 20px;
-  margin-top: 8px;
-  opacity: 0.7;
-}
-
-.author-name {
-  margin-top: 8px;
-  color: #666;
-  font-size: 14px;
-}
-
-/* 相关部分的样式 */
-.section:last-child {
-  position: relative;
-  overflow: hidden;
-  background: none;
-  min-height: 300px; /* 确保有足够的高度 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.section:last-child::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('https://sourcebucket.s3.bitiful.net/img/aurora.webp') no-repeat center center;
-  background-size: cover;
-  opacity: 0.85;
-  z-index: 0;
-}
-
-/* 确保内容在背景之上 */
-.section:last-child h3,
-.section:last-child a,
-.section:last-child div {
-  position: relative;
-  z-index: 1;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* 增强文字阴影 */
-}
-
-.section:last-child h3 {
-  font-size: 1.5em;
-  margin-bottom: 20px;
-}
-
-.avatar-container {
-  width: 120px; /* 增大头像尺寸 */
+  width: 120px;
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
   margin: 20px auto;
-  border: 4px solid rgba(255, 255, 255, 0.9); /* 增强边框 */
+  border: 4px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
 }
 
-.avatar-container img {
+.avatar-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background: url('../assets/avatar.jpg') center center no-repeat;
+  background-size: cover;
   transition: transform 0.3s ease;
 }
 
-.avatar-container:hover img {
+.avatar-container:hover .avatar-image {
   transform: scale(1.1);
 }
 
 .github-icon {
-  width: 32px; /* 增大图标尺寸 */
+  width: 32px;
   height: 32px;
   margin: 20px auto;
-  opacity: 1; /* 增加不透明度 */
+  opacity: 1;
+  background: url('../assets/github.svg') center center no-repeat;
+  background-size: contain;
   filter: brightness(0) invert(1);
   transition: transform 0.3s ease;
 }
@@ -924,4 +873,36 @@ button + button {
 
 .output-value-animation.fade-in {
   animation: fadeInOut 0.4s ease-in-out forwards;
+}
+
+/* 数据详情样式 */
+.data-detail {
+  padding: 10px;
+  padding-right: 20px;
+}
+
+.detail-item {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+  padding-left: 10px;
+}
+
+.detail-label {
+  font-weight: bold;
+  min-width: 80px;
+  color: var(--text-secondary);
+}
+
+.detail-value {
+  flex: 1;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+/* 数据解释的样式 */
+.detail-value span {
+  display: block;
+  color: var(--primary-color);
+  font-size: 0.95em;
 }
