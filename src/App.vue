@@ -203,15 +203,22 @@
 		OUT_MODE: 4,
 	};
 
-	const RUN_MODE_TYPE = {
-		BUCK: 0,
-		BOOST: 1,
-		MIXED: 2,
-	};
-
-	const OUT_MODE_TYPE = {
-		CV: 0,
-		CC: 1,
+	const STATUS_MAPPINGS = {
+		RUN_MODE: {
+			BUCK: 0,
+			BOOST: 1,
+			MIXED: 2,
+		},
+		OUT_MODE: {
+			CV: 0,
+			CC: 1,
+		},
+		ERROR_TYPE: {
+			OFFLINE: 0,
+			OVERCURRENT: 1,
+			OVERVOLTAGE: 2,
+			OVERTEMP: 3,
+		},
 	};
 
 	// 生命周期钩子
@@ -243,10 +250,23 @@
 			device.value = await navigator.serial.requestPort();
 			await device.value.open({ baudRate: 115200 });
 			isConnected.value = true;
-			reader = device.value.readable.getReader();
+
+			startReading();
+		} catch (error) {
+			console.error('串口连接失败:', error);
+			showAlert('串口打开失败，请检查设备连接');
+			await disconnectDevice();
+		}
+	};
+
+	const startReading = async () => {
+		reader = device.value.readable.getReader();
+
+		try {
 			while (isConnected.value) {
 				const { value, done } = await reader.read();
 				if (done) break;
+
 				if (value) {
 					buffer.push(...value);
 					if (!serialTimer) {
@@ -254,24 +274,32 @@
 					}
 				}
 			}
-			reader.releaseLock();
 		} catch (error) {
-			console.error('Failed to open serial port:', error);
-			showAlert('串口打开失败，请检查设备连接');
-			device.value = undefined;
-			isConnected.value = false;
+			console.error('读取数据错误:', error);
+			showAlert('数据读取错误，连接已断开');
+		} finally {
+			reader?.releaseLock();
 		}
 	};
 
 	const disconnectDevice = async () => {
-		if (device.value) {
+		try {
 			if (reader) {
 				await reader.cancel();
 				reader.releaseLock();
 			}
-			await device.value.close();
+			if (device.value) {
+				await device.value.close();
+			}
+		} catch (error) {
+			console.error('断开连接错误:', error);
+		} finally {
+			device.value = undefined;
+			isConnected.value = false;
+			clearTimeout(serialTimer);
+			clearTimeout(invalidDataTimer);
+			buffer = [];
 		}
-		isConnected.value = false;
 	};
 
 	const processBuffer = () => {
@@ -310,66 +338,53 @@
 		frame.FunctionCode = (data[1] << 8) | data[0];
 		frame.Value = (data[3] << 8) | data[2];
 		frame.CheckValue = (data[5] << 8) | data[4];
-		if (calculateChecksum(data) === frame.CheckValue) {
-			switch (frame.FunctionCode) {
-				case REPORT_TYPE.VOUT:
-					if (nowVoltage.value !== frame.Value / 100) {
-						oldVoltage.value = nowVoltage.value;
-						nowVoltage.value = frame.Value / 100;
-						animateValue('voltage');
-					}
-					break;
-				case REPORT_TYPE.IOUT:
-					if (nowCurrent.value !== frame.Value / 100) {
-						oldCurrent.value = nowCurrent.value;
-						nowCurrent.value = frame.Value / 100;
-						animateValue('current');
-					}
-					break;
-				case REPORT_TYPE.RUN_ERROR_TYPE:
-					switch (frame.Value) {
-						case 0:
-							faultType.value = '电源掉线';
-							break;
-						case 1:
-							faultType.value = '过流';
-							break;
-						case 2:
-							faultType.value = '过压';
-							break;
-						case 3:
-							faultType.value = '过温';
-							break;
-					}
-					break;
-				case REPORT_TYPE.RUN_MODE:
-					switch (frame.Value) {
-						case RUN_MODE_TYPE.BUCK:
-							workMode.value = 'BUCK';
-							break;
-						case RUN_MODE_TYPE.BOOST:
-							workMode.value = 'BOOST';
-							break;
-						case RUN_MODE_TYPE.MIXED:
-							workMode.value = 'MIXED';
-							break;
-					}
-					break;
-				case REPORT_TYPE.OUT_MODE:
-					switch (frame.Value) {
-						case OUT_MODE_TYPE.CV:
-							mode.value = 'CV';
-							break;
-						case OUT_MODE_TYPE.CC:
-							mode.value = 'CC';
-							break;
-					}
-					break;
-			}
-		} else {
+
+		if (calculateChecksum(data) !== frame.CheckValue) {
 			checkInvalidData();
-			console.log(data);
+			console.warn('校验和错误:', data);
+			return;
 		}
+
+		const handlers = {
+			[REPORT_TYPE.VOUT]: () => updateValue('voltage', frame.Value / 100),
+			[REPORT_TYPE.IOUT]: () => updateValue('current', frame.Value / 100),
+			[REPORT_TYPE.RUN_ERROR_TYPE]: () => handleErrorType(frame.Value),
+			[REPORT_TYPE.RUN_MODE]: () => handleRunMode(frame.Value),
+			[REPORT_TYPE.OUT_MODE]: () => handleOutMode(frame.Value),
+		};
+
+		handlers[frame.FunctionCode]?.();
+	};
+
+	const updateValue = (type, newValue) => {
+		const current = type === 'voltage' ? nowVoltage : nowCurrent;
+		const old = type === 'voltage' ? oldVoltage : oldCurrent;
+
+		if (current.value !== newValue) {
+			old.value = current.value;
+			current.value = newValue;
+			animateValue(type);
+		}
+	};
+
+	const handleErrorType = (value) => {
+		const errorTypes = {
+			[STATUS_MAPPINGS.ERROR_TYPE.OFFLINE]: '电源掉线',
+			[STATUS_MAPPINGS.ERROR_TYPE.OVERCURRENT]: '过流',
+			[STATUS_MAPPINGS.ERROR_TYPE.OVERVOLTAGE]: '过压',
+			[STATUS_MAPPINGS.ERROR_TYPE.OVERTEMP]: '过温',
+		};
+		faultType.value = errorTypes[value] || '未知错误';
+	};
+
+	const handleRunMode = (value) => {
+		const modes = Object.entries(STATUS_MAPPINGS.RUN_MODE).find(([_, v]) => v === value)?.[0];
+		if (modes) workMode.value = modes;
+	};
+
+	const handleOutMode = (value) => {
+		const modes = Object.entries(STATUS_MAPPINGS.OUT_MODE).find(([_, v]) => v === value)?.[0];
+		if (modes) mode.value = modes;
 	};
 
 	const setParameter = (type) => {
