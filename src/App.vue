@@ -11,6 +11,37 @@
 					{{ isConnected ? '断开连接' : '选择设备' }}
 				</button>
 			</div>
+			<div class="input-parameters">
+				<h4>输入参数</h4>
+				<div class="input-grid">
+					<div class="output-card">
+						<span class="output-label">电压</span>
+						<div class="output-value-container">
+							<span class="output-value">
+								{{ formatNumber(inputVoltage, 2) }}
+								<small>V</small>
+							</span>
+							<span class="output-value output-value-animation" ref="inputVoltageAnimation">
+								{{ formatNumber(oldInputVoltage, 2) }}
+								<small>V</small>
+							</span>
+						</div>
+					</div>
+					<div class="output-card">
+						<span class="output-label">电流</span>
+						<div class="output-value-container">
+							<span class="output-value">
+								{{ formatNumber(inputCurrent, 2) }}
+								<small>A</small>
+							</span>
+							<span class="output-value output-value-animation" ref="inputCurrentAnimation">
+								{{ formatNumber(oldInputCurrent, 2) }}
+								<small>A</small>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="section output-section">
 			<h3>输出参数</h3>
@@ -177,6 +208,10 @@
 	const dataHistory = ref([]);
 	const oldVoltage = ref(24.0);
 	const oldCurrent = ref(5.0);
+	const inputVoltage = ref(24.0);
+	const inputCurrent = ref(5.0);
+	const oldInputVoltage = ref(24.0);
+	const oldInputCurrent = ref(5.0);
 
 	// 非响应式变量
 	let reader;
@@ -346,8 +381,10 @@
 		}
 
 		const handlers = {
-			[REPORT_TYPE.VOUT]: () => updateValue('voltage', frame.Value / 100),
-			[REPORT_TYPE.IOUT]: () => updateValue('current', frame.Value / 100),
+			[REPORT_TYPE.VOUT]: () => updateValue('voltage', frame.Value / 100, false),
+			[REPORT_TYPE.IOUT]: () => updateValue('current', frame.Value / 100, false),
+			[REPORT_TYPE.VIN]: () => updateValue('voltage', frame.Value / 100, true),
+			[REPORT_TYPE.IIN]: () => updateValue('current', frame.Value / 100, true),
 			[REPORT_TYPE.RUN_ERROR_TYPE]: () => handleErrorType(frame.Value),
 			[REPORT_TYPE.RUN_MODE]: () => handleRunMode(frame.Value),
 			[REPORT_TYPE.OUT_MODE]: () => handleOutMode(frame.Value),
@@ -356,14 +393,26 @@
 		handlers[frame.FunctionCode]?.();
 	};
 
-	const updateValue = (type, newValue) => {
-		const current = type === 'voltage' ? nowVoltage : nowCurrent;
-		const old = type === 'voltage' ? oldVoltage : oldCurrent;
+	const updateValue = (type, newValue, isInput = false) => {
+		const current = isInput
+			? type === 'voltage'
+				? inputVoltage
+				: inputCurrent
+			: type === 'voltage'
+			? nowVoltage
+			: nowCurrent;
+		const old = isInput
+			? type === 'voltage'
+				? oldInputVoltage
+				: oldInputCurrent
+			: type === 'voltage'
+			? oldVoltage
+			: oldCurrent;
 
 		if (current.value !== newValue) {
 			old.value = current.value;
 			current.value = newValue;
-			animateValue(type);
+			animateValue(type, isInput);
 		}
 	};
 
@@ -460,9 +509,12 @@
 		return calculatedChecksum;
 	};
 
-	const animateValue = (type) => {
+	const animateValue = (type, isInput = false) => {
+		const section = isInput ? 'input-grid' : 'output-grid';
 		const element = document.querySelector(
-			`.output-card:nth-child(${type === 'voltage' ? '1' : '2'}) .output-value-animation`
+			`.${section} .output-card:nth-child(${
+				type === 'voltage' ? '1' : '2'
+			}) .output-value-animation`
 		);
 		element.classList.remove('fade-in');
 		void element.offsetWidth;
