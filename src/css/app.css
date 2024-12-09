@@ -616,7 +616,7 @@ button + button {
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* 连接状态下的光晕效果 */
+/* 连接状态的光晕效果 */
 .status-icon.connected::after {
   background: var(--success-color);
 }
@@ -666,9 +666,9 @@ button + button {
 }
 
 /* 输出参数卡片样式 */
-.output-grid {
+.card-grid {
   display: grid;
-  grid-template-columns: 1fr; /* 改为单列布局 */
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
@@ -1229,212 +1229,112 @@ html {
   font-weight: 500;
 }
 
-.input-grid {
+/* 统一使用 card-grid 类替代 input-grid 和 output-grid */
+.card-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 横向排布 */
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-/* 在小屏幕上保持横向排布 */
-@media (max-width: 768px) {
-  .input-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .input-grid .output-card {
-    min-height: 80px; /* 稍微降低高度适应横向布局 */
-    padding: 12px;
-  }
-  
-  .input-grid .output-value {
-    font-size: 1.8em; /* 稍微减小字体大小 */
-  }
+/* 统一卡片样式 */
+.card {
+  background: linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
+  padding: 20px;
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  border: 1px solid var(--border-color);
+  min-height: 100px;
 }
 
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .input-parameters h4 {
-    color: var(--text-secondary);
-  }
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-
-/* 输入参数样式 */
-.input-parameters {
-  margin-top: 20px;
+/* 统一数值显示样式 */
+.value-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.input-parameters h4 {
-  font-size: 1em;
-  color: var(--text-secondary);
-  margin: 0 0 12px;
-  font-weight: 500;
-}
-
-.input-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 横向排布 */
-  gap: 16px;
-}
-
-/* 在小屏幕上保持横向排布 */
-@media (max-width: 768px) {
-  .input-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .input-grid .output-card {
-    min-height: 80px; /* 稍微降低高度适应横向布局 */
-    padding: 12px;
-  }
-  
-  .input-grid .output-value {
-    font-size: 1.8em; /* 稍微减小字体大小 */
-  }
-}
-
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .input-parameters h4 {
-    color: var(--text-secondary);
-  }
-}
-
-/* 输入参数和输出参数的卡片样式统一 */
-.input-grid .output-card,
-.output-grid .output-card {
-    background: linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
-    padding: 20px;
-    border-radius: var(--border-radius);
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    border: 1px solid var(--border-color);
-}
-
-/* 输入参数值和单位样式优化 */
-.input-grid .output-value {
-  font-size: 2.2em; /* 稍微调小字号 */
+.value-display {
+  font-size: 2.2em;
   font-weight: 700;
   color: var(--primary-color);
   display: flex;
   justify-content: center;
-  align-items: baseline; /* 让单位对齐到数字的基线 */
-  gap: 2px; /* 数字和单位之间的间距 */
+  align-items: baseline;
+  gap: 2px;
 }
 
-.input-grid .output-value small {
-  font-size: 0.45em; /* 调整单位的大小 */
+.value-display small {
+  font-size: 0.45em;
   font-weight: 500;
   opacity: 0.8;
   margin-left: 2px;
-  color: var(--text-secondary); /* 使用次要文本颜色 */
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .input-grid .output-value {
-    font-size: 1.8em;
-  }
-  
-  .input-grid .output-value small {
-    font-size: 0.5em;
-  }
-}
-
-/* 深色模式适配 */
-/* @media (prefers-color-scheme: dark) {
-  .input-grid .output-value small {
-    color: var(--text-light);
-  }
-} */
-
-/* 输入参数样式 */
-.input-parameters {
-  margin-top: 20px;
-}
-
-.input-parameters h4 {
-  font-size: 1em;
   color: var(--text-secondary);
-  margin: 0 0 12px;
-  font-weight: 500;
 }
 
-.input-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 横向排布 */
-  gap: 16px;
+/* 动画相关样式 */
+.value-animation {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* 在小屏幕上保持横向排布 */
-@media (max-width: 768px) {
-  .input-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .input-grid .output-card {
-    min-height: 80px; /* 稍微降低高度适应横向布局 */
-    padding: 12px;
-  }
-  
-  .input-grid .output-value {
-    font-size: 1.8em; /* 稍微减小字体大小 */
-  }
-}
-
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .input-parameters h4 {
-    color: var(--text-secondary);
-  }
-}
-
-/* 输入参数和输出参数的卡片样式统一 */
-.input-grid .output-card,
-.output-grid .output-card {
-    background: linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
-    padding: 20px;
-    border-radius: var(--border-radius);
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    border: 1px solid var(--border-color);
-}
-
-/* 输入参数值和单位样式优化 */
-.input-grid .output-value {
-  font-size: 2.2em; /* 稍微调小字号 */
-  font-weight: 700;
-  color: var(--primary-color);
-  display: flex;
-  justify-content: center;
-  align-items: baseline; /* 让单位对齐到数字的基线 */
-  gap: 2px; /* 数字和单位之间的间距 */
-}
-
-.input-grid .output-value small {
-  font-size: 0.45em; /* 调整单位的大小 */
-  font-weight: 500;
-  opacity: 0.8;
-  margin-left: 2px;
-  color: var(--text-secondary); /* 使用次要文本颜色 */
+.value-animation.fade-in {
+  animation: fadeInOut 0.4s ease-in-out forwards;
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  .input-grid .output-value {
+  .card {
+    padding: 12px;
+    min-height: 80px;
+  }
+  
+  .value-display {
     font-size: 1.8em;
   }
   
-  .input-grid .output-value small {
+  .value-display small {
     font-size: 0.5em;
   }
 }
 
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .input-grid .output-value small {
-    color: var(--primary-color);
+/* 输出参数特殊布局 */
+.output-section .card-grid {
+  grid-template-columns: 1fr;  /* 改为单列布局 */
+}
+
+.output-section .card {
+  min-height: 80px;  /* 减小每个卡片的高度 */
+  margin-bottom: 16px;  /* 增加卡片之间的间距 */
+}
+
+.output-section .card:last-child {
+  margin-bottom: 0;  /* 最后一个卡片不需要底部间距 */
+}
+
+/* 调整输出值的字体大小 */
+.output-section .value-display {
+  font-size: 2.4em;  /* 稍微调整字体大小 */
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .output-section .card {
+    min-height: 70px;  /* 移动端进一步减小高度 */
+  }
+  
+  .output-section .value-display {
+    font-size: 2em;  /* 移动端调整字体大小 */
   }
 }

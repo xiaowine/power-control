@@ -13,28 +13,28 @@
 			</div>
 			<div class="input-parameters">
 				<h4>输入参数</h4>
-				<div class="input-grid">
-					<div class="output-card">
+				<div class="card-grid">
+					<div class="card">
 						<span class="output-label">电压</span>
-						<div class="output-value-container">
-							<span class="output-value">
+						<div class="value-container">
+							<span class="value-display">
 								{{ formatNumber(inputVoltage, 2) }}
 								<small>V</small>
 							</span>
-							<span class="output-value output-value-animation" ref="inputVoltageAnimation">
+							<span class="value-display value-animation" ref="inputVoltageAnimation">
 								{{ formatNumber(oldInputVoltage, 2) }}
 								<small>V</small>
 							</span>
 						</div>
 					</div>
-					<div class="output-card">
+					<div class="card">
 						<span class="output-label">电流</span>
-						<div class="output-value-container">
-							<span class="output-value">
+						<div class="value-container">
+							<span class="value-display">
 								{{ formatNumber(inputCurrent, 2) }}
 								<small>A</small>
 							</span>
-							<span class="output-value output-value-animation" ref="inputCurrentAnimation">
+							<span class="value-display value-animation" ref="inputCurrentAnimation">
 								{{ formatNumber(oldInputCurrent, 2) }}
 								<small>A</small>
 							</span>
@@ -45,28 +45,28 @@
 		</div>
 		<div class="section output-section">
 			<h3>输出参数</h3>
-			<div class="output-grid">
-				<div class="output-card">
+			<div class="card-grid">
+				<div class="card">
 					<span class="output-label">电压</span>
-					<div class="output-value-container">
-						<span class="output-value">
+					<div class="value-container">
+						<span class="value-display">
 							{{ formatNumber(nowVoltage, 2) }}
 							<small>V</small>
 						</span>
-						<span class="output-value output-value-animation" ref="voltageAnimation">
+						<span class="value-display value-animation" ref="voltageAnimation">
 							{{ formatNumber(oldVoltage, 2) }}
 							<small>V</small>
 						</span>
 					</div>
 				</div>
-				<div class="output-card">
+				<div class="card">
 					<span class="output-label">电流</span>
-					<div class="output-value-container">
-						<span class="output-value">
+					<div class="value-container">
+						<span class="value-display">
 							{{ formatNumber(nowCurrent, 2) }}
 							<small>A</small>
 						</span>
-						<span class="output-value output-value-animation" ref="currentAnimation">
+						<span class="value-display value-animation" ref="currentAnimation">
 							{{ formatNumber(oldCurrent, 2) }}
 							<small>A</small>
 						</span>
@@ -195,6 +195,10 @@
 	import { showDialog, showAlert } from './utils/dialog';
 
 	// 状态变量
+	const voltageAnimation = ref(null);
+	const currentAnimation = ref(null);
+	const inputVoltageAnimation = ref(null);
+	const inputCurrentAnimation = ref(null);
 	const device = ref();
 	const isConnected = ref(false);
 	const targetVoltage = ref(24.0);
@@ -510,15 +514,19 @@
 	};
 
 	const animateValue = (type, isInput = false) => {
-		const section = isInput ? 'input-grid' : 'output-grid';
-		const element = document.querySelector(
-			`.${section} .output-card:nth-child(${
-				type === 'voltage' ? '1' : '2'
-			}) .output-value-animation`
-		);
-		element.classList.remove('fade-in');
-		void element.offsetWidth;
-		element.classList.add('fade-in');
+		const animationRef = isInput
+			? type === 'voltage'
+				? inputVoltageAnimation
+				: inputCurrentAnimation
+			: type === 'voltage'
+			? voltageAnimation
+			: currentAnimation;
+
+		if (animationRef.value) {
+			animationRef.value.classList.remove('fade-in');
+			void animationRef.value.offsetWidth;
+			animationRef.value.classList.add('fade-in');
+		}
 	};
 
 	const showDataDetail = (item) => {
