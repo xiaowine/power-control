@@ -17,17 +17,29 @@
 			<div class="output-grid">
 				<div class="output-card">
 					<span class="output-label">电压</span>
-					<span class="output-value">
-						{{ formatNumber(nowVoltage, 2) }}
-						<small>V</small>
-					</span>
+					<div class="output-value-container">
+						<span class="output-value">
+							{{ formatNumber(nowVoltage, 2) }}
+							<small>V</small>
+						</span>
+						<span class="output-value output-value-animation" ref="voltageAnimation">
+							{{ formatNumber(oldVoltage, 2) }}
+							<small>V</small>
+						</span>
+					</div>
 				</div>
 				<div class="output-card">
 					<span class="output-label">电流</span>
-					<span class="output-value">
-						{{ formatNumber(nowCurrent, 2) }}
-						<small>A</small>
-					</span>
+					<div class="output-value-container">
+						<span class="output-value">
+							{{ formatNumber(nowCurrent, 2) }}
+							<small>A</small>
+						</span>
+						<span class="output-value output-value-animation" ref="currentAnimation">
+							{{ formatNumber(oldCurrent, 2) }}
+							<small>A</small>
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -122,6 +134,9 @@
 				Value: 0,
 				CheckValue: 0,
 			};
+			const oldVoltage = ref(24.0);
+			const oldCurrent = ref(5.0);
+
 			onMounted(() => {});
 
 			onUnmounted(() => {
@@ -225,10 +240,18 @@
 				if (calculateChecksum(data) === frame.CheckValue) {
 					switch (frame.FunctionCode) {
 						case 0x0000:
-							nowVoltage.value = frame.Value / 100;
+							if (nowVoltage.value !== frame.Value / 100) {
+								oldVoltage.value = nowVoltage.value;
+								nowVoltage.value = frame.Value / 100;
+								animateValue('voltage');
+							}
 							break;
 						case 0x0001:
-							nowCurrent.value = frame.Value / 100;
+							if (nowCurrent.value !== frame.Value / 100) {
+								oldCurrent.value = nowCurrent.value;
+								nowCurrent.value = frame.Value / 100;
+								animateValue('current');
+							}
 							break;
 						case 0x0002:
 							switch (frame.Value) {
@@ -272,9 +295,17 @@
 			// 设置参数
 			const setParameter = (type) => {
 				if (type === 'voltage') {
-					nowVoltage.value = targetVoltage.value;
+					if (nowVoltage.value !== targetVoltage.value) {
+						oldVoltage.value = nowVoltage.value;
+						nowVoltage.value = targetVoltage.value;
+						animateValue('voltage');
+					}
 				} else if (type === 'current') {
-					nowCurrent.value = targetCurrent.value;
+					if (nowCurrent.value !== targetCurrent.value) {
+						oldCurrent.value = nowCurrent.value;
+						nowCurrent.value = targetCurrent.value;
+						animateValue('current');
+					}
 				}
 			};
 
@@ -336,6 +367,18 @@
 				return calculatedChecksum;
 			};
 
+			const animateValue = (type) => {
+				const element = document.querySelector(
+					`.output-card:nth-child(${type === 'voltage' ? '1' : '2'}) .output-value-animation`
+				);
+				// 先移除可能存在的动画类
+				element.classList.remove('fade-in');
+				// 强制重绘
+				void element.offsetWidth;
+				// 添加动画类
+				element.classList.add('fade-in');
+			};
+
 			return {
 				device,
 				isConnected,
@@ -357,6 +400,9 @@
 				addDataHistory,
 				updateTargetVoltage,
 				updateTargetCurrent,
+				animateValue,
+				oldVoltage,
+				oldCurrent,
 			};
 		},
 	};
