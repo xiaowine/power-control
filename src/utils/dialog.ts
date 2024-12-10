@@ -70,27 +70,19 @@ export function showDialog(options: DialogOptions): DialogInstance {
 				});
 
 				return () =>
-					h(
-						Dialog,
-						{
-							modelValue: dialogState.visible.value || false,
-							'onUpdate:modelValue': (val: boolean) => {
-								dialogState.visible.value = val;
-								if (!val) cleanup();
-							},
-							title: dialogState.title.value || '提示',
-							width,
-							closeOnClickOverlay,
-							class: className,
+					h(Dialog, {
+						modelValue: dialogState.visible.value || false,
+						'onUpdate:modelValue': (val: boolean) => {
+							dialogState.visible.value = val;
+							if (!val) cleanup();
 						},
-						{
-							default: () =>
-								typeof dialogState.content.value === 'string'
-									? dialogState.content.value
-									: h(dialogState.content.value as Component),
-							...(footer && { footer: () => h(footer) }),
-						}
-					);
+						title: dialogState.title.value || '提示',
+						width,
+						closeOnClickOverlay,
+						class: className,
+						content: dialogState.content.value,
+						footer: footer,
+					});
 			},
 		});
 

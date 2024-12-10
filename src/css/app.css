@@ -6,12 +6,11 @@ body {
   width: 100%;
   height: 100%;
   background-color: var(--bg-secondary);
-  background-size: cover;
+  color: var(--text-primary);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
-  color: var(--text-primary);
 }
 
 body {
@@ -61,7 +60,6 @@ h3 {
   font-size: 1.2em;
   font-weight: bold;
   color: var(--text-primary);
-  border-bottom: 2px solid var(--border-color);
   padding-bottom: 8px;
 }
 
@@ -114,7 +112,7 @@ button {
   border: none;
   border-radius: 5px;
   background-color: var(--primary-color);
-  color: white;
+  color: var(--bg-primary);
   font-size: 1em;
   cursor: pointer;
   margin: 10px 5px; /* 优化按钮间距 */
@@ -143,20 +141,20 @@ button:active {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: red;
+  background-color: var(--error-color);
   margin-right: 8px;
   vertical-align: middle;
 }
 
 .status-dot.connected {
-  background-color: green;
+  background-color: var(--success-color);
 }
 
 /* 输出参数样式 */
 .output-parameters .value {
   font-size: 3em;
   font-weight: bold;
-  color: #007bff;
+  color: var(--primary-color);
   text-align: center;
   margin-bottom: 15px;
 }
@@ -169,7 +167,6 @@ button:active {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-bottom: 12px;
   font-size: 1em;
   transition: color 0.3s var(--animate-timing);
 }
@@ -191,15 +188,15 @@ textarea {
   font-size: 1em; /* 字体大小 */
   resize: vertical; /* 仅允许纵向调整大小 */
   overflow-y: auto; /* 内容超出时滚动 */
-  background-color: #f8f9fa; /* 背景色 */
-  color: #495057; /* 字体颜色 */
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   box-sizing: border-box; /* 包括内边距在宽度计算中 */
   margin-bottom: 10px; /* 与其他元素的间距 */
 }
 
 /* 为 textarea 的 placeholder 提供样式 */
 textarea::placeholder {
-  color: #adb5bd; /* 提示文字颜色 */
+  color: var(--text-secondary);
   font-style: italic; /* 斜体 */
 }
 
@@ -264,7 +261,6 @@ button + button {
 
   h3 {
     color: #e0e0e0; /* 标题颜色 */
-    border-bottom-color: #3c3c3c; /* 边框颜色 */
   }
 
   input[type="number"],
@@ -425,10 +421,12 @@ button + button {
   }
 }
 
-/* 在 :root 中添加文本颜色的 RGB 值 */
+/* 在 :root 中添加文本色的 RGB 值 */
 :root {
-  /* 已有的变量... */
+  /* 已有的���量... */
   --text-secondary-rgb: 127, 140, 141;  /* #7f8c8d 的 RGB 值 */
+  --cancel-color: #6c757d;
+  --cancel-dark: #5a6268;
 }
 
 /* 深色模式适配 */
@@ -484,76 +482,90 @@ button + button {
 /* 重置和基础样式 */
 :root {
   /* 主题色 */
-  --primary-color: #3498db;
-  --primary-dark: #2980b9;
-  --primary-light: #ebf5fb;
+  --primary-color: #007bff;
+  --primary-dark: #0056b3;
+  --primary-light: #e6f3ff;
+  --primary-color-rgb: 0, 123, 255;
   
-  /* 状态色 */
-  --success-color: #2ecc71;
-  --error-color: #e74c3c;
-  --warning-color: #f1c40f;
+  /* 功能色 */
+  --success-color: #28a745;
+  --error-color: #dc3545;
+  --warning-color: #ffc107;
+  --cancel-color: #6c757d;
+  
+  /* 功能色的暗色版本 */
+  --success-dark: #1e7e34;
+  --error-dark: #bd2130;
+  --warning-dark: #d39e00;
+  --cancel-dark: #5a6268;
+  
+  /* RGB值用于透明度计算 */
+  --success-color-rgb: 40, 167, 69;
+  --error-color-rgb: 220, 53, 69;
+  --warning-color-rgb: 255, 193, 7;
+  --cancel-color-rgb: 108, 117, 125;
   
   /* 文本色 */
-  --text-primary: #2c3e50;
-  --text-secondary: #7f8c8d;
-  --text-light: #95a5a6;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-light: #adb5bd;
+  --text-secondary-rgb: 108, 117, 125;
   
   /* 背景色 */
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
-  --bg-tertiary: #ecf0f1;
+  --bg-tertiary: #e9ecef;
+  --bg-primary-rgb: 255, 255, 255;
+  --bg-secondary-rgb: 248, 249, 250;
   
-  /* 边框色 */
-  --border-color: #dfe6e9;
-  
-  /* 其他 */
+  /* 边框和阴影 */
+  --border-color: #dee2e6;
   --border-radius: 12px;
-  --transition: all 0.3s ease;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  
+  /* 布局和动画 */
   --container-padding: 24px;
   --grid-gap: 24px;
   --section-padding: 20px;
   --animate-duration: 0.3s;
   --animate-timing: cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* 添加 RGB 变量 */
-  --primary-color-rgb: 52, 152, 219;  /* #3498db 的 RGB 值 */
-  --error-color-rgb: 231, 76, 60;     /* #e74c3c 的 RGB 值 */
-  --success-color-rgb: 46, 204, 113;  /* #2ecc71 的 RGB 值 */
-  --bg-primary-rgb: 255, 255, 255;
-  --bg-secondary-rgb: 248, 249, 250;
+  --transition: all 0.3s ease;
 }
 
-/* 深色模式变量 */
+/* 深色模式变量 - 保持主题色不变 */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* 主题色保持不变 */
-    --primary-color: #3498db;
-    --primary-dark: #2980b9;
+    /* 保持主题色不变 */
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --primary-light: #0d6efd;
     
-    /* 优化深色背景色系 */
+    /* 调整背景色 */
     --bg-primary: #1e1e1e;
     --bg-secondary: #252525;
     --bg-tertiary: #2d2d2d;
     --bg-elevated: #333333;
+    --bg-primary-rgb: 30, 30, 30;
+    --bg-secondary-rgb: 37, 37, 37;
     
-    /* 优化文本颜色 */
+    /* 调整文本色 */
     --text-primary: #ffffff;
     --text-secondary: #a0a0a0;
     --text-light: #808080;
     
-    /* 优化边框颜色 */
+    /* 调整边框和阴影 */
     --border-color: rgba(255, 255, 255, 0.1);
-    
-    /* 优化阴影 */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
-    --bg-primary-rgb: 30, 30, 30;
-    --bg-secondary-rgb: 37, 37, 37;
   }
+}
+
+/* 基础样式 */
+html {
+  scroll-behavior: smooth;
 }
 
 /* 设备状态样式优化 */
@@ -1000,7 +1012,7 @@ button + button {
     display: flex;
     flex-direction: row; /* 改为横向 */
     gap: 8px;
-    padding: 8px;
+    /* padding: 8px; */
     flex-wrap: wrap; /* 允许换行 */
 }
 
@@ -1052,7 +1064,7 @@ button + button {
     border: 1px solid var(--border-color);
     transition: all 0.2s var(--animate-timing);
     cursor: default;
-    flex: 1; /* 让选项平均分配空间 */
+    flex: 1; /* 让选项平均分配间 */
     text-align: center;
     min-width: 50px; /* 设置最小宽度 */
 }
@@ -1347,4 +1359,107 @@ html {
 
 .data-dialog {
   margin-left: 100px;
+}
+
+/* 目标设定部分的样式 */
+.target-settings {
+  padding: 20px;
+}
+
+.target-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.target-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.target-card {
+  background: var(--primary-color);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s var(--animate-timing);
+  color: white;
+}
+
+.target-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--primary-dark);
+}
+
+.target-value {
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.target-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9em;
+}
+
+/* 对话框样式 */
+.dialog-input-container {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius);
+}
+
+.dialog-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 1.2em;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .target-settings {
+    padding: 15px;
+  }
+
+  .target-group {
+    grid-template-columns: 1fr;
+  }
+
+  /* ... 其他响应式样式 */
+}
+
+/* 添加取消按钮样式 */
+.cancel-btn {
+  background-color: var(--cancel-color);
+  /* color: var(--bg-primary); */
+}
+
+.cancel-btn:hover {
+  background-color: var(--cancel-dark);
+  transform: scale(1.05);
+}
+
+.cancel-btn:active {
+  transform: scale(0.95);
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* ... 其他深色模式变量 ... */
+    --cancel-color: #495057;
+    --cancel-dark: #343a40;
+  }
 }

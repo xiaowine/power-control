@@ -96,32 +96,14 @@
 			<h3>目标设定</h3>
 			<div class="target-controls">
 				<div class="target-group">
-					<div class="target-input">
-						<label>电压设定</label>
-						<div class="input-with-unit">
-							<input
-								type="number"
-								oninput="if(value>80)value=80;if(value.length>4)value=value.slice(0,4);if(value<0)value=0"
-								:value="targetVoltage"
-								@input="(e) => e.target && updateTargetVoltage((e.target as HTMLInputElement).value)"
-							/>
-							<span class="unit">V</span>
-						</div>
-						<button class="set-btn" @click="sendVoltageData">设定电压</button>
+					<div class="target-card" @click="showVoltageDialog">
+						<div class="target-value">{{ targetVoltage }}V</div>
+						<div class="target-label">设置电压</div>
 					</div>
 
-					<div class="target-input">
-						<label>电流设定</label>
-						<div class="input-with-unit">
-							<input
-								type="number"
-								oninput="if(value>5)value=5;if(value.length>4)value=value.slice(0,4);if(value<0)value=0"
-								:value="targetCurrent"
-								@input="(e) => e.target && updateTargetCurrent((e.target as HTMLInputElement).value)"
-							/>
-							<span class="unit">A</span>
-						</div>
-						<button class="set-btn" @click="sendCurrentData">设定电流</button>
+					<div class="target-card" @click="showCurrentDialog">
+						<div class="target-value">{{ targetCurrent }}A</div>
+						<div class="target-label">设置电流</div>
 					</div>
 				</div>
 
@@ -535,7 +517,7 @@
 	};
 
 	const handleRunMode = (value: number): void => {
-		handleMode(value, STATUS_MAPPINGS.RUN_MODE, workMode, '未知运行模��');
+		handleMode(value, STATUS_MAPPINGS.RUN_MODE, workMode, '未知运行模式');
 	};
 
 	const handleOutMode = (value: number): void => {
@@ -648,7 +630,6 @@
 	const showDataDetail = (item: DataHistoryItem): void => {
 		const dialog = showDialog({
 			title: '数据详情',
-			width: '500px',
 			content: {
 				setup() {
 					return () =>
@@ -686,251 +667,68 @@
 			},
 		});
 	};
+	// 显示设置对话框
+	const showSettingDialog = (type: 'voltage' | 'current') => {
+		const isVoltage = type === 'voltage';
+		const tempValue = ref(isVoltage ? targetVoltage.value : targetCurrent.value);
+		const maxValue = isVoltage ? 80 : 5;
+		const unit = isVoltage ? 'V' : 'A';
+
+		const dialog = showDialog({
+			title: `设置${isVoltage ? '电压' : '电流'}`,
+			content: {
+				setup() {
+					return () =>
+						h('div', { class: 'dialog-input-container' }, [
+							h('input', {
+								type: 'number',
+								value: tempValue.value,
+								onInput: (e: Event) => {
+									const value = (e.target as HTMLInputElement).value;
+									const num = parseFloat(value);
+									if (num > maxValue) tempValue.value = maxValue;
+									else if (num < 0) tempValue.value = 0;
+									else tempValue.value = num;
+								},
+								class: 'dialog-input',
+								placeholder: `请输入${isVoltage ? '电压' : '电流'}值`,
+							}),
+							h('span', { class: 'dialog-unit' }, unit),
+						]);
+				},
+			},
+			footer: {
+				setup() {
+					return () =>
+						h('div', { class: 'dialog-footer' }, [
+							h('button', { onClick: () => dialog.close(), class: 'cancel-btn' }, '取消'),
+							h(
+								'button',
+								{
+									onClick: () => {
+										if (isVoltage) {
+											targetVoltage.value = tempValue.value;
+											sendVoltageData();
+										} else {
+											targetCurrent.value = tempValue.value;
+											sendCurrentData();
+										}
+										dialog.close();
+									},
+									class: 'confirm-btn',
+								},
+								'确定'
+							),
+						]);
+				},
+			},
+		});
+	};
+
+	const showVoltageDialog = () => showSettingDialog('voltage');
+	const showCurrentDialog = () => showSettingDialog('current');
 </script>
 
 <style>
 	@import url('./css/app.css');
-
-	/* 目标设定部分的样式 */
-	.target-settings {
-		padding: 20px;
-	}
-
-	.target-controls {
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-	}
-
-	.target-group {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 20px;
-	}
-
-	.target-input {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		background: var(--bg-secondary);
-		padding: 15px;
-		border-radius: 8px;
-		border: 1px solid var(--border-color);
-	}
-
-	.target-input label {
-		font-size: 0.9em;
-		color: var(--text-secondary);
-		margin-bottom: 0;
-	}
-
-	.input-with-unit {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		background: var(--bg-primary);
-		padding: 8px;
-		border-radius: 6px;
-		border: 1px solid var(--border-color);
-	}
-
-	.input-with-unit input {
-		flex: 1;
-		border: none;
-		padding: 8px;
-		font-size: 1.1em;
-		background: transparent;
-		color: var(--text-primary);
-		width: auto;
-		min-width: 0;
-	}
-
-	.input-with-unit .unit {
-		color: var(--text-secondary);
-		font-size: 0.9em;
-		padding-right: 8px;
-		flex-shrink: 0;
-	}
-
-	.set-btn {
-		width: 100%;
-		padding: 10px;
-		background: var(--primary-color);
-		color: white;
-		border: none;
-		border-radius: 6px;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		font-size: 1em;
-	}
-
-	.set-btn:hover {
-		background: var(--primary-dark);
-		transform: translateY(-1px);
-	}
-
-	.control-group {
-		display: flex;
-		gap: 20px;
-		flex-wrap: wrap;
-	}
-
-	.power-controls,
-	.mode-controls {
-		display: flex;
-		gap: 10px;
-		flex: 1;
-		min-width: 200px;
-	}
-
-	.power-btn {
-		flex: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		padding: 12px 20px;
-		border-radius: 6px;
-		font-weight: 500;
-		min-height: 44px;
-	}
-
-	.power-btn.active {
-		background: var(--success-color);
-	}
-
-	.power-btn.off {
-		background: var(--danger-color);
-	}
-
-	.power-icon {
-		width: 14px;
-		height: 14px;
-		border: 2px solid currentColor;
-		border-radius: 50%;
-		position: relative;
-		flex-shrink: 0;
-	}
-
-	.power-icon::after {
-		content: '';
-		position: absolute;
-		top: -5px;
-		left: 4px;
-		width: 2px;
-		height: 8px;
-		background: currentColor;
-	}
-
-	.mode-controls button {
-		flex: 1;
-		padding: 12px 20px;
-		min-height: 44px;
-	}
-
-	.mode-controls button.active {
-		background: var(--primary-dark);
-	}
-
-	/* 响应式调整 */
-	@media (max-width: 768px) {
-		.target-settings {
-			padding: 15px;
-		}
-
-		.target-group {
-			grid-template-columns: 1fr;
-			gap: 15px;
-		}
-
-		.target-input {
-			padding: 12px;
-		}
-
-		.input-with-unit {
-			padding: 6px;
-		}
-
-		.input-with-unit input {
-			font-size: 1em;
-			padding: 6px;
-		}
-
-		.set-btn {
-			padding: 12px 8px;
-			font-size: 0.95em;
-		}
-
-		.control-group {
-			gap: 12px;
-		}
-
-		.power-controls,
-		.mode-controls {
-			width: 100%;
-			min-width: unset;
-		}
-
-		/* 优化按钮在移动端的显示 */
-		.power-btn,
-		.mode-controls button {
-			padding: 10px 15px;
-			font-size: 0.95em;
-		}
-
-		/* 确保电源图标在小屏幕上正确显示 */
-		.power-icon {
-			width: 12px;
-			height: 12px;
-		}
-
-		.power-icon::after {
-			top: -4px;
-			left: 3px;
-			height: 6px;
-		}
-	}
-
-	/* 超小屏幕优化 */
-	@media (max-width: 360px) {
-		.target-settings {
-			padding: 10px;
-		}
-
-		.target-controls {
-			gap: 15px;
-		}
-
-		.target-input {
-			padding: 10px;
-		}
-
-		.input-with-unit input {
-			font-size: 0.95em;
-		}
-
-		.power-btn,
-		.mode-controls button {
-			padding: 8px 12px;
-			font-size: 0.9em;
-		}
-	}
-
-	/* 添加触摸设备的优化 */
-	@media (hover: none) {
-		.set-btn:hover {
-			transform: none;
-		}
-
-		.set-btn:active {
-			background: var(--primary-dark);
-			transform: translateY(1px);
-		}
-
-		.power-btn:active,
-		.mode-controls button:active {
-			transform: translateY(1px);
-			opacity: 0.9;
-		}
-	}
 </style>
