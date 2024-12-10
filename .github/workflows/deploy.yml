@@ -30,8 +30,9 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          folder: dist # Vite 默认的构建输出目录
-          branch: gh-pages # 部署到 gh-pages 分支
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist/ # 指定构建输出目录
+
