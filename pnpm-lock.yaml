@@ -31,7 +31,7 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1(vite@6.0.3(@types/node@20.17.9)(terser@5.37.0))
       vue-tsc:
-        specifier: ^2.0.6
+        specifier: ^2.1.10
         version: 2.1.10(typescript@5.7.2)
 
 packages:
