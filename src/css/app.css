@@ -224,7 +224,7 @@ button + button {
 
   input[type="number"],
   select {
-    padding: 8px 10px; /* ���小输入框内边距 */
+    padding: 8px 10px; /* 缩小输入框内边距 */
     font-size: 0.9em; /* 缩小输入框字体 */
   }
 }
@@ -421,7 +421,7 @@ button + button {
   }
 }
 
-/* 在 :root 中添加文本色��� RGB 值 */
+/* 在 :root 中添加文本色的 RGB 值 */
 :root {
   /* 已有的量... */
   --text-secondary-rgb: 127, 140, 141;  /* #7f8c8d 的 RGB 值 */
@@ -493,7 +493,7 @@ button + button {
   --warning-color: #ffc107;
   --cancel-color: #6c757d;
   
-  /* 功能色的暗色版本 */
+  /* 功能色的���色版本 */
   --success-dark: #1e7e34;
   --error-dark: #bd2130;
   --warning-dark: #d39e00;
@@ -597,7 +597,7 @@ html {
   white-space: nowrap; /* 防止文字换行 */
 }
 
-/* 状态图标样式优化 */
+/* 状态��标样式优化 */
 .status-icon {
   position: relative;
   width: 16px;
@@ -878,7 +878,7 @@ html {
     }
 }
 
-/* 响应式调��� */
+/* 响应式调整 */
 @media (max-width: 768px) {
   .section:last-child {
     min-height: 250px;
@@ -1542,31 +1542,29 @@ html {
   color: var(--primary-color);
 }
 
-/* 电源图标 */
 .power-icon {
-  width: 16px;
-  height: 16px;
-  border: 2px solid currentColor;
-  border-radius: 50%;
-  position: relative;
-  display: inline-block;
+  width: 20px;  /* 根据需要调整大小 */
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 5px;
 }
 
-.power-icon::after {
+/* .power-icon::after {
   content: '';
   position: absolute;
   top: -6px;
-  left: 5px;
+  left: 7px;
   width: 2px;
   height: 10px;
   background: currentColor;
-}
+} */
 
 /* 深色模式适配 */
 @media (prefers-color-scheme: dark) {
   .power-btn {
     background: rgba(var(--bg-secondary-rgb), 0.3);
   }
+  
   
   .mode-controls {
     background: rgba(var(--bg-secondary-rgb), 0.3);
@@ -1589,5 +1587,12 @@ html {
   
   .mode-controls button {
     padding: 6px 12px;
+  }
+}
+
+/* 深色模式下图标显示为白色 */
+@media (prefers-color-scheme: dark) {
+  .power-icon {
+    filter: brightness(0) invert(1);  /* 将黑色图标转换为白色 */
   }
 }

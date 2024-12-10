@@ -110,7 +110,7 @@
 				<div class="control-group">
 					<div class="power-controls">
 						<button class="power-btn" :class="{ active: workStatus === '工作中' }" @click="powerOn">
-							<i class="power-icon"></i>
+							<img src="./assets/power.svg" alt="power" class="power-icon" />
 							开机
 						</button>
 						<button class="power-btn off" @click="powerOff">关机</button>
@@ -448,7 +448,7 @@
 			0,
 		]);
 
-		const writer = device.value.writable.getWriter();
+		const writer = device!.value.writable.getWriter();
 		const checksum = calculateChecksum(data);
 		data[4] = checksum & 0xff;
 		data[5] = (checksum >> 8) & 0xff;
@@ -562,7 +562,7 @@
 				[FunctionType.VREF]: `设置电压: ${frameData.Value / 100} V`,
 				[FunctionType.IREF]: `设置电流: ${frameData.Value / 100} A`,
 				[FunctionType.EN]: `${frameData.Value === 1 ? '开机' : '关机'}`,
-				[FunctionType.MODE]: `设置模式: ${frameData.Value === 0 ? 'CV' : 'CC'}`,
+				[FunctionType.OUT_MODE]: `设置模式: ${frameData.Value === 0 ? 'CV' : 'CC'}`,
 			};
 			// 解析接收的数据
 			const receiveExplanations: Record<number, string> = {
@@ -751,7 +751,7 @@
 	const toggleMode = (newMode: 'CV' | 'CC'): void => {
 		if (mode.value !== newMode) {
 			mode.value = newMode;
-			sendData(FunctionType.MODE, newMode === 'CV' ? 0 : 1, '模式');
+			sendData(FunctionType.OUT_MODE, newMode === 'CV' ? 0 : 1, '模式');
 		}
 	};
 </script>

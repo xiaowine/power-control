@@ -113,41 +113,10 @@
 	}
 
 	.dialog-footer {
-		/* padding: 16px; */
 		padding: 0 10px 10px 0;
 		display: flex;
 		justify-content: flex-end;
 		gap: 12px;
-	}
-
-	.dialog-input-container {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.dialog-input {
-		flex: 1;
-		min-width: 0;
-		padding: 8px 12px;
-		border: 1px solid var(--border-color);
-		border-radius: 4px;
-		font-size: 1.1em;
-		background: var(--bg-secondary);
-		color: var(--text-primary);
-		text-align: center;
-	}
-
-	.dialog-input:focus {
-		outline: none;
-		border-color: var(--primary-color);
-		box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
-	}
-
-	.dialog-unit {
-		font-size: 1.1em;
-		color: var(--text-secondary);
-		padding: 0 4px;
 	}
 
 	@keyframes dialog-fade-in {
@@ -161,14 +130,12 @@
 		}
 	}
 
-	/* 深色模式适配 */
 	@media (prefers-color-scheme: dark) {
 		.dialog-overlay {
 			background: rgba(0, 0, 0, 0.7);
 		}
 	}
 
-	/* 响应式调整 */
 	@media (max-width: 768px) {
 		.dialog-container {
 			width: calc(100vw - 32px) !important;
