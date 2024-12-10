@@ -15,7 +15,7 @@
 		"@vitejs/plugin-vue": "^5.2.1",
 		"vite": "^6.0.3",
 		"vite-plugin-compression": "^0.5.1",
-		"terser": "^5.37.2",
+		"terser": "^5.37.0",
 		"typescript": "^5.7.2",
 		"vue-tsc": "^2.1.10",
 		"@types/node": "^22.10.1"
