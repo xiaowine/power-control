@@ -1,4 +1,4 @@
-import { createApp, Component, h, ref, onMounted } from 'vue';
+import { createApp, Component, h, ref, onMounted, markRaw } from 'vue';
 import Dialog from '../components/Dialog.vue';
 
 export interface DialogOptions {
@@ -45,7 +45,7 @@ export function showDialog(options: DialogOptions): DialogInstance {
 		const dialogState: DialogState = {
 			visible: ref<boolean>(true),
 			title: ref<string>(title),
-			content: ref<string | Component>(content),
+			content: ref<string | Component>(typeof content === 'string' ? content : markRaw(content)),
 		};
 
 		const cleanup = () => {
