@@ -668,7 +668,7 @@ button + button {
 /* 输出参数卡片样式 */
 .card-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
@@ -1232,7 +1232,7 @@ html {
 /* 统一使用 card-grid 类替代 input-grid 和 output-grid */
 .card-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
@@ -1246,6 +1246,10 @@ html {
   transition: var(--transition);
   border: 1px solid var(--border-color);
   min-height: 100px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .card:hover {
@@ -1253,13 +1257,21 @@ html {
   box-shadow: var(--shadow-md);
 }
 
-/* 统一数值显示样式 */
-.value-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
+/* 统一标签样式 */
+.output-label {
+  font-size: 1em;
+  color: var(--text-secondary);
+  margin-bottom: 4px; /* 减小标签和数值之间的间距 */
+  font-weight: 500;
 }
 
+/* 统一数值容器样式 */
+.value-container {
+  position: relative;
+  height: 2.6em;
+}
+
+/* 统一数值显示样式 */
 .value-display {
   font-size: 2.2em;
   font-weight: 700;
@@ -1268,6 +1280,10 @@ html {
   justify-content: center;
   align-items: baseline;
   gap: 2px;
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .value-display small {
@@ -1293,48 +1309,34 @@ html {
   animation: fadeInOut 0.4s ease-in-out forwards;
 }
 
+/* 输出参数布局 */
+.output-section .card-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.output-section .card {
+  min-height: 100px;
+  margin-bottom: 0;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
   .card {
-    padding: 12px;
-    min-height: 80px;
+    padding: 16px;
+    min-height: 90px;
   }
   
   .value-display {
-    font-size: 1.8em;
+    font-size: 2em;
   }
   
   .value-display small {
     font-size: 0.5em;
   }
-}
-
-/* 输出参数特殊布局 */
-.output-section .card-grid {
-  grid-template-columns: 1fr;  /* 改为单列布局 */
-}
-
-.output-section .card {
-  min-height: 80px;  /* 减小每个卡片的高度 */
-  margin-bottom: 16px;  /* 增加卡片之间的间距 */
-}
-
-.output-section .card:last-child {
-  margin-bottom: 0;  /* 最后一个卡片不需要底部间距 */
-}
-
-/* 调整输出值的字体大小 */
-.output-section .value-display {
-  font-size: 2.4em;  /* 稍微调整字体大小 */
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .output-section .card {
-    min-height: 70px;  /* 移动端进一步减小高度 */
-  }
   
-  .output-section .value-display {
-    font-size: 2em;  /* 移动端调整字体大小 */
+  .output-section .card-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }

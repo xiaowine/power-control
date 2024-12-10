@@ -72,6 +72,24 @@
 						</span>
 					</div>
 				</div>
+				<div class="card">
+					<span class="output-label">效率</span>
+					<div class="value-container">
+						<span class="value-display">
+							{{ formatValue('efficiency', efficiency) }}
+							<small>%</small>
+						</span>
+					</div>
+				</div>
+				<div class="card">
+					<span class="output-label">功耗</span>
+					<div class="value-container">
+						<span class="value-display">
+							{{ formatValue('power', power) }}
+							<small>W</small>
+						</span>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="section target-settings">
@@ -151,7 +169,7 @@
 					<div class="status-label">故障类型</div>
 					<div class="status-options error-options">
 						<span
-							v-for="error in ['正常', '掉线', '过流', '过压', '过温']"
+							v-for="error in ['正常', '断线', '过流', '过压', '过温']"
 							:key="error"
 							:class="['status-option', { active: faultType === error }]"
 						>
@@ -216,6 +234,8 @@
 	const inputCurrent = ref(5.0);
 	const oldInputVoltage = ref(24.0);
 	const oldInputCurrent = ref(5.0);
+	const efficiency = ref(0.0);
+	const power = ref(0.0);
 
 	// 非响应式变量
 	let reader;
@@ -405,6 +425,7 @@
 			: type === 'voltage'
 			? nowVoltage
 			: nowCurrent;
+
 		const old = isInput
 			? type === 'voltage'
 				? oldInputVoltage
@@ -416,6 +437,16 @@
 		if (current.value !== newValue) {
 			old.value = current.value;
 			current.value = newValue;
+
+			if (type === 'voltage' || type === 'current') {
+				power.value = nowVoltage.value * nowCurrent.value;
+
+				const inputPower = inputVoltage.value * inputCurrent.value;
+				if (inputPower > 0) {
+					efficiency.value = Math.min((power.value / inputPower) * 100, 100);
+				}
+			}
+
 			animateValue(type, isInput);
 		}
 	};
@@ -520,7 +551,11 @@
 				: inputCurrentAnimation
 			: type === 'voltage'
 			? voltageAnimation
-			: currentAnimation;
+			: type === 'current'
+			? currentAnimation
+			: type === 'efficiency'
+			? efficiencyAnimation
+			: powerAnimation;
 
 		if (animationRef.value) {
 			animationRef.value.classList.remove('fade-in');
@@ -569,6 +604,13 @@
 				},
 			},
 		});
+	};
+
+	const formatValue = (type, value) => {
+		if (type === 'efficiency' || type === 'power') {
+			return value.toFixed(1);
+		}
+		return formatNumber(value, 2);
 	};
 </script>
 
