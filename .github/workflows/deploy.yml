@@ -33,11 +33,12 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: make CNAME
+        run: echo power.xiaowine.cc > dist/CNAME
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: dist/ # 指定构建输出目录
 
-      - name: make CNAME
-        run: echo power.xiaowine.cc > dist/CNAME
