@@ -255,11 +255,13 @@
 	};
 
 	const REPORT_TYPE = {
-		VOUT: 0,
-		IOUT: 1,
-		RUN_ERROR_TYPE: 2,
-		RUN_MODE: 3,
-		OUT_MODE: 4,
+		VIN: 0,
+		IIN: 1,
+		VOUT: 2,
+		IOUT: 3,
+		RUN_ERROR_TYPE: 4,
+		RUN_MODE: 5,
+		OUT_MODE: 6,
 	};
 
 	const STATUS_MAPPINGS = {
@@ -405,6 +407,8 @@
 		}
 
 		const handlers = {
+			[REPORT_TYPE.VIN]: () => updateValue('voltage', frame.Value / 100, true),
+			[REPORT_TYPE.IIN]: () => updateValue('voltage', frame.Value / 100, true),
 			[REPORT_TYPE.VOUT]: () => updateValue('voltage', frame.Value / 100, false),
 			[REPORT_TYPE.IOUT]: () => updateValue('current', frame.Value / 100, false),
 			[REPORT_TYPE.VIN]: () => updateValue('voltage', frame.Value / 100, true),
