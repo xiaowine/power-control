@@ -224,7 +224,7 @@ button + button {
 
   input[type="number"],
   select {
-    padding: 8px 10px; /* 缩小输入框内边距 */
+    padding: 8px 10px; /* ���小输入框内边距 */
     font-size: 0.9em; /* 缩小输入框字体 */
   }
 }
@@ -421,9 +421,9 @@ button + button {
   }
 }
 
-/* 在 :root 中添加文本色的 RGB 值 */
+/* 在 :root 中添加文本色��� RGB 值 */
 :root {
-  /* 已有的���量... */
+  /* 已有的量... */
   --text-secondary-rgb: 127, 140, 141;  /* #7f8c8d 的 RGB 值 */
   --cancel-color: #6c757d;
   --cancel-dark: #5a6268;
@@ -878,7 +878,7 @@ html {
     }
 }
 
-/* 响应式调整 */
+/* 响应式调��� */
 @media (max-width: 768px) {
   .section:last-child {
     min-height: 250px;
@@ -1461,5 +1461,133 @@ html {
     /* ... 其他深色模式变量 ... */
     --cancel-color: #495057;
     --cancel-dark: #343a40;
+  }
+}
+
+/* 控制组样式 */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 电源控制按钮组 */
+.power-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.power-btn {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  font-size: 1em;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s var(--animate-timing);
+}
+
+.power-btn.active {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.power-btn.off {
+  background: var(--error-color);
+  color: white;
+  border-color: var(--error-color);
+}
+
+.power-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 模式控制按钮组 */
+.mode-controls {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.mode-controls button {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.3s var(--animate-timing);
+  border-radius: calc(var(--border-radius) - 4px);
+  margin: 0;
+}
+
+.mode-controls button.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.mode-controls button:hover:not(.active) {
+  background: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
+}
+
+/* 电源图标 */
+.power-icon {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  position: relative;
+  display: inline-block;
+}
+
+.power-icon::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 5px;
+  width: 2px;
+  height: 10px;
+  background: currentColor;
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .power-btn {
+    background: rgba(var(--bg-secondary-rgb), 0.3);
+  }
+  
+  .mode-controls {
+    background: rgba(var(--bg-secondary-rgb), 0.3);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .control-group {
+    gap: 12px;
+  }
+  
+  .power-controls {
+    flex-direction: column;
+  }
+  
+  .power-btn {
+    padding: 10px 20px;
+  }
+  
+  .mode-controls button {
+    padding: 6px 12px;
   }
 }

@@ -1,7 +1,7 @@
 <template>
 	<Transition name="dialog-fade">
 		<div v-if="modelValue" class="dialog-overlay" @click="handleOverlayClick">
-			<div class="dialog-container">
+			<div class="dialog-container" @click.stop>
 				<div class="dialog-header">
 					<h3>{{ title }}</h3>
 					<button class="close-btn" @click="close">×</button>

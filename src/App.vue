@@ -110,13 +110,14 @@
 				<div class="control-group">
 					<div class="power-controls">
 						<button class="power-btn" :class="{ active: workStatus === '工作中' }" @click="powerOn">
-							<i class="power-icon"></i>开机
+							<i class="power-icon"></i>
+							开机
 						</button>
 						<button class="power-btn off" @click="powerOff">关机</button>
 					</div>
 					<div class="mode-controls">
-						<button :class="{ active: mode === 'CV' }" @click="">CV</button>
-						<button :class="{ active: mode === 'CC' }" @click="">CC</button>
+						<button :class="{ active: mode === 'CV' }" @click="toggleMode('CV')">CV</button>
+						<button :class="{ active: mode === 'CC' }" @click="toggleMode('CC')">CC</button>
 					</div>
 				</div>
 			</div>
@@ -214,7 +215,7 @@
 	import { FunctionType, ReportType } from './types';
 	import type { SerialPort } from './types/serial';
 
-	// ===== 状态变量分组 =====
+	// ===== 状态变��分组 =====
 	// UI 动画相关的 refs
 	const voltageAnimation = ref<HTMLElement>();
 	const currentAnimation = ref<HTMLElement>();
@@ -226,8 +227,8 @@
 	const isConnected = ref<boolean>(false);
 
 	// 目标值设定
-	const targetVoltage = ref<number>(24.0);
-	const targetCurrent = ref<number>(5.0);
+	const targetVoltage = ref<number>(20.0);
+	const targetCurrent = ref<number>(4.0);
 
 	// 当前输出值
 	const nowVoltage = ref<number>(24.0);
@@ -437,16 +438,17 @@
 			showAlert('请先连接设备');
 			return;
 		}
-		const writer = device.value.writable.getWriter();
-		const roundedValue = Math.round(value * 100);
+
 		const data = new Uint8Array([
 			type & 0xff,
 			(type >> 8) & 0xff,
-			roundedValue & 0xff,
-			(roundedValue >> 8) & 0xff,
+			value & 0xff,
+			(value >> 8) & 0xff,
 			0,
 			0,
 		]);
+
+		const writer = device.value.writable.getWriter();
 		const checksum = calculateChecksum(data);
 		data[4] = checksum & 0xff;
 		data[5] = (checksum >> 8) & 0xff;
@@ -457,8 +459,10 @@
 	};
 
 	// 导出控制命令
-	const sendVoltageData = (): void => sendData(FunctionType.VREF, targetVoltage.value, '电压');
-	const sendCurrentData = (): void => sendData(FunctionType.IREF, targetCurrent.value, '电流');
+	const sendVoltageData = (): void =>
+		sendData(FunctionType.VREF, Math.round(targetVoltage.value * 100), '电压');
+	const sendCurrentData = (): void =>
+		sendData(FunctionType.IREF, Math.round(targetCurrent.value * 100), '电流');
 	const powerOn = (): void => sendData(FunctionType.EN, 1, '开机');
 	const powerOff = (): void => sendData(FunctionType.EN, 0, '关机');
 
@@ -548,11 +552,20 @@
 		}
 	};
 
-	function parseDataFrame(hexString: string): string {
+	function parseDataFrame(hexString: string, isSend: boolean): string {
 		try {
 			const data = new Uint8Array(hexString.split(' ').map((byte) => parseInt(byte, 16)));
 			const frameData = dataParse(data);
-			const explanations: Record<number, string> = {
+
+			// 解析发送的数据
+			const sendExplanations: Record<number, string> = {
+				[FunctionType.VREF]: `设置电压: ${frameData.Value / 100} V`,
+				[FunctionType.IREF]: `设置电流: ${frameData.Value / 100} A`,
+				[FunctionType.EN]: `${frameData.Value === 1 ? '开机' : '关机'}`,
+				[FunctionType.MODE]: `设置模式: ${frameData.Value === 0 ? 'CV' : 'CC'}`,
+			};
+			// 解析接收的数据
+			const receiveExplanations: Record<number, string> = {
 				[ReportType.VIN]: `输入电压: ${frameData.Value / 100} V`,
 				[ReportType.IIN]: `输入电流: ${frameData.Value / 100} A`,
 				[ReportType.VOUT]: `输出电压: ${frameData.Value / 100} V`,
@@ -561,8 +574,11 @@
 				[ReportType.RUN_MODE]: `运行模式: ${getRunModeDescription(frameData.Value)}`,
 				[ReportType.OUT_MODE]: `输出模式: ${getOutModeDescription(frameData.Value)}`,
 			};
-
-			return explanations[frameData.FunctionCode] || '未知功能码';
+			if (isSend) {
+				return sendExplanations[frameData.FunctionCode];
+			} else {
+				return receiveExplanations[frameData.FunctionCode];
+			}
 		} catch (error) {
 			console.error('解析数据帧错误:', error);
 			return '数据解析错误';
@@ -648,7 +664,11 @@
 							]),
 							h('div', { class: 'detail-item' }, [
 								h('span', { class: 'detail-label' }, '解释:'),
-								h('span', { class: 'detail-value' }, parseDataFrame(item.message)),
+								h(
+									'span',
+									{ class: 'detail-value' },
+									parseDataFrame(item.message, item.type === 'sent')
+								),
 							]),
 						]);
 				},
@@ -727,6 +747,13 @@
 
 	const showVoltageDialog = () => showSettingDialog('voltage');
 	const showCurrentDialog = () => showSettingDialog('current');
+
+	const toggleMode = (newMode: 'CV' | 'CC'): void => {
+		if (mode.value !== newMode) {
+			mode.value = newMode;
+			sendData(FunctionType.MODE, newMode === 'CV' ? 0 : 1, '模式');
+		}
+	};
 </script>
 
 <style>
