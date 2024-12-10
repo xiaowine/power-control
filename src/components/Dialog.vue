@@ -1,7 +1,7 @@
 <template>
 	<Transition name="dialog-fade">
 		<div v-if="modelValue" class="dialog-overlay" @click="handleOverlayClick">
-			<div class="dialog-container" :style="{ width: width }">
+			<div class="dialog-container" :style="{ width }">
 				<!-- 标题栏 -->
 				<div class="dialog-header">
 					<h3>{{ title }}</h3>
@@ -22,27 +22,24 @@
 	</Transition>
 </template>
 
-<script setup>
-	const props = defineProps({
-		modelValue: {
-			type: Boolean,
-			default: false,
-		},
-		title: {
-			type: String,
-			default: '提示',
-		},
-		width: {
-			type: String,
-			default: '400px',
-		},
-		closeOnClickOverlay: {
-			type: Boolean,
-			default: true,
-		},
+<script setup lang="ts">
+	interface DialogProps {
+		modelValue: boolean;
+		title: string;
+		width: string;
+		closeOnClickOverlay: boolean;
+	}
+
+	const props = withDefaults(defineProps<DialogProps>(), {
+		modelValue: false,
+		title: '提示',
+		width: '400px',
+		closeOnClickOverlay: true,
 	});
 
-	const emit = defineEmits(['update:modelValue']);
+	const emit = defineEmits<{
+		'update:modelValue': [value: boolean];
+	}>();
 
 	const close = () => {
 		emit('update:modelValue', false);

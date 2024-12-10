@@ -100,11 +100,11 @@
 						type="number"
 						oninput="if(value>80)value=80;if(value.length>4)value=value.slice(0,4);if(value<0)value=0"
 						:value="targetVoltage"
-						@input="updateTargetVoltage($event.target.value)"
+						@input="(e) => e.target && updateTargetVoltage((e.target as HTMLInputElement).value)"
 					/>
 					V
 				</label>
-				<button @click="setParameter('voltage')">设定电压</button>
+				<button @click="sendVoltageData">设定电压</button>
 			</div>
 			<div>
 				<label>
@@ -112,11 +112,11 @@
 						type="number"
 						oninput="if(value>5)value=5;if(value.length>4)value=value.slice(0,4);if(value<0)value=0"
 						:value="targetCurrent"
-						@input="updateTargetCurrent($event.target.value)"
+						@input="(e) => e.target && updateTargetCurrent((e.target as HTMLInputElement).value)"
 					/>
 					A
 				</label>
-				<button @click="setParameter('current')">设定电流</button>
+				<button @click="sendCurrentData">设定电流</button>
 			</div>
 			<div>
 				<button @click="powerOn">开机</button>
@@ -208,63 +208,46 @@
 	</div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 	import { ref, onMounted, onUnmounted, h } from 'vue';
 	import { showDialog, showAlert } from './utils/dialog';
+	import type { DataHistoryItem, FrameData } from './types';
+	import { FunctionType, ReportType, type StatusMappings } from './types';
+	import type { SerialPort } from './types/serial';
 
 	// 状态变量
-	const voltageAnimation = ref(null);
-	const currentAnimation = ref(null);
-	const inputVoltageAnimation = ref(null);
-	const inputCurrentAnimation = ref(null);
-	const device = ref();
-	const isConnected = ref(false);
-	const targetVoltage = ref(24.0);
-	const targetCurrent = ref(5.0);
-	const nowVoltage = ref(24.0);
-	const nowCurrent = ref(5.0);
-	const workMode = ref('BUCK');
-	const workStatus = ref('未工作');
-	const mode = ref('CC');
-	const faultType = ref('正常');
-	const dataHistory = ref([]);
-	const oldVoltage = ref(24.0);
-	const oldCurrent = ref(5.0);
-	const inputVoltage = ref(24.0);
-	const inputCurrent = ref(5.0);
-	const oldInputVoltage = ref(24.0);
-	const oldInputCurrent = ref(5.0);
-	const efficiency = ref(0.0);
-	const power = ref(0.0);
+	const voltageAnimation = ref<HTMLElement>();
+	const currentAnimation = ref<HTMLElement>();
+	const inputVoltageAnimation = ref<HTMLElement>();
+	const inputCurrentAnimation = ref<HTMLElement>();
+	const device = ref<SerialPort>();
+	const isConnected = ref<boolean>(false);
+	const targetVoltage = ref<number>(24.0);
+	const targetCurrent = ref<number>(5.0);
+	const nowVoltage = ref<number>(24.0);
+	const nowCurrent = ref<number>(5.0);
+	const workMode = ref<'BUCK' | 'BOOST' | 'MIXED'>('BUCK');
+	const workStatus = ref<'未工作' | '工作中'>('未工作');
+	const mode = ref<'CV' | 'CC'>('CC');
+	const faultType = ref<'正常' | '断线' | '过流' | '过压' | '过温'>('正常');
+	const dataHistory = ref<DataHistoryItem[]>([]);
+	const oldVoltage = ref<number>(24.0);
+	const oldCurrent = ref<number>(5.0);
+	const inputVoltage = ref<number>(24.0);
+	const inputCurrent = ref<number>(5.0);
+	const oldInputVoltage = ref<number>(24.0);
+	const oldInputCurrent = ref<number>(5.0);
+	const efficiency = ref<number>(0.0);
+	const power = ref<number>(0.0);
 
 	// 非响应式变量
-	let reader;
-	let buffer = [];
-	let serialTimer;
+	let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+	let buffer: number[] = [];
+	let serialTimer = 0;
 	let invalidDataCount = 0;
-	let invalidDataTimer;
-	let frame = {
-		FunctionCode: 0,
-		Value: 0,
-		CheckValue: 0,
-	};
-	const FUN_TYPE = {
-		EN: 0,
-		VREF: 1,
-		IREF: 2,
-	};
+	let invalidDataTimer = 0;
 
-	const REPORT_TYPE = {
-		VIN: 0,
-		IIN: 1,
-		VOUT: 2,
-		IOUT: 3,
-		RUN_ERROR_TYPE: 4,
-		RUN_MODE: 5,
-		OUT_MODE: 6,
-	};
-
-	const STATUS_MAPPINGS = {
+	const STATUS_MAPPINGS: StatusMappings = {
 		RUN_MODE: {
 			BUCK: 0,
 			BOOST: 1,
@@ -290,11 +273,11 @@
 	});
 
 	// 方法
-	const formatNumber = (number, decimals) => {
+	const formatNumber = (number: number, decimals: number): string => {
 		return number.toFixed(decimals).padStart(5, '0');
 	};
 
-	const toggleConnection = async () => {
+	const toggleConnection = async (): Promise<void> => {
 		if (!('serial' in navigator)) {
 			showAlert('浏览器不支持串口通信');
 			return;
@@ -306,12 +289,11 @@
 		}
 	};
 
-	const connectDevice = async () => {
+	const connectDevice = async (): Promise<void> => {
 		try {
 			device.value = await navigator.serial.requestPort();
 			await device.value.open({ baudRate: 115200 });
 			isConnected.value = true;
-
 			startReading();
 		} catch (error) {
 			console.error('串口连接失败:', error);
@@ -320,8 +302,10 @@
 		}
 	};
 
-	const startReading = async () => {
+	const startReading = async (): Promise<void> => {
+		if (!device.value?.readable) return;
 		reader = device.value.readable.getReader();
+		if (!reader) return;
 
 		try {
 			while (isConnected.value) {
@@ -329,9 +313,9 @@
 				if (done) break;
 
 				if (value) {
-					buffer.push(...value);
-					if (!serialTimer) {
-						serialTimer = setTimeout(processBuffer, 30);
+					buffer.push(...Array.from(value));
+					if (serialTimer === 0) {
+						serialTimer = window.setTimeout(processBuffer, 30);
 					}
 				}
 			}
@@ -343,7 +327,7 @@
 		}
 	};
 
-	const disconnectDevice = async () => {
+	const disconnectDevice = async (): Promise<void> => {
 		try {
 			if (reader) {
 				await reader.cancel();
@@ -363,72 +347,74 @@
 		}
 	};
 
-	const processBuffer = () => {
+	const processBuffer = (): void => {
+		clearTimeout(serialTimer);
+		serialTimer = 0;
+
 		if (buffer.length === 6) {
-			let data = new Uint8Array(buffer);
-			dataParse(data);
+			const data = new Uint8Array(buffer);
+			const frame_data = dataParse(data);
+			if (calculateChecksum(data) !== frame_data.CheckValue) {
+				checkInvalidData();
+				console.warn('校验和错误:', data);
+				buffer = [];
+				return;
+			}
+
+			const handlers: Record<number, () => void> = {
+				[ReportType.VIN]: () => updateValue('voltage', frame_data.Value / 100, true),
+				[ReportType.IIN]: () => updateValue('current', frame_data.Value / 100, true),
+				[ReportType.VOUT]: () => updateValue('voltage', frame_data.Value / 100, false),
+				[ReportType.IOUT]: () => updateValue('current', frame_data.Value / 100, false),
+				[ReportType.RUN_ERROR_TYPE]: () => handleErrorType(frame_data.Value),
+				[ReportType.RUN_MODE]: () => handleRunMode(frame_data.Value),
+				[ReportType.OUT_MODE]: () => handleOutMode(frame_data.Value),
+			};
+
+			handlers[frame_data.FunctionCode]?.();
 			addDataHistory(data);
 		} else {
 			checkInvalidData();
 		}
 		buffer = [];
-		serialTimer = null;
 	};
 
-	const checkInvalidData = () => {
+	const checkInvalidData = (): void => {
 		if (invalidDataCount > 10) {
 			showAlert('收到过多无效数据，已自动关闭串口');
 			disconnectDevice();
 			invalidDataCount = 0;
-			invalidDataTimer = null;
+			clearTimeout(invalidDataTimer);
 		} else {
 			invalidDataCount++;
-			invalidDataTimer = null;
-			invalidDataTimer = setTimeout(() => {
+			clearTimeout(invalidDataTimer);
+			invalidDataTimer = window.setTimeout(() => {
 				if (invalidDataCount > 10) {
 					showAlert('收到过多无效数据，已自动关闭串口');
 					disconnectDevice();
 				}
 				invalidDataCount = 0;
-				invalidDataTimer = null;
+				clearTimeout(invalidDataTimer);
 			}, 60000);
 		}
 	};
 
-	const dataParse = (data) => {
-		frame.FunctionCode = (data[1] << 8) | data[0];
-		frame.Value = (data[3] << 8) | data[2];
-		frame.CheckValue = (data[5] << 8) | data[4];
-
-		if (calculateChecksum(data) !== frame.CheckValue) {
-			checkInvalidData();
-			console.warn('校验和错误:', data);
-			return;
-		}
-
-		const handlers = {
-			[REPORT_TYPE.VIN]: () => updateValue('voltage', frame.Value / 100, true),
-			[REPORT_TYPE.IIN]: () => updateValue('voltage', frame.Value / 100, true),
-			[REPORT_TYPE.VOUT]: () => updateValue('voltage', frame.Value / 100, false),
-			[REPORT_TYPE.IOUT]: () => updateValue('current', frame.Value / 100, false),
-			[REPORT_TYPE.VIN]: () => updateValue('voltage', frame.Value / 100, true),
-			[REPORT_TYPE.IIN]: () => updateValue('current', frame.Value / 100, true),
-			[REPORT_TYPE.RUN_ERROR_TYPE]: () => handleErrorType(frame.Value),
-			[REPORT_TYPE.RUN_MODE]: () => handleRunMode(frame.Value),
-			[REPORT_TYPE.OUT_MODE]: () => handleOutMode(frame.Value),
+	const dataParse = (data: Uint8Array): FrameData => {
+		return {
+			FunctionCode: (data[1] << 8) | data[0],
+			Value: (data[3] << 8) | data[2],
+			CheckValue: (data[5] << 8) | data[4],
 		};
-
-		handlers[frame.FunctionCode]?.();
 	};
 
-	const updateValue = (type, newValue, isInput = false) => {
+	const updateValue = (type: 'voltage' | 'current', newValue: number, isInput = false): void => {
 		const current = isInput
 			? type === 'voltage'
-				? inputVoltage
-				: inputCurrent
+				? inputVoltage.value
+				: inputCurrent.value
 			: type === 'voltage'
-			? nowVoltage
-			: nowCurrent;
+			? nowVoltage.value
+			: nowCurrent.value;
 
 		const old = isInput
 			? type === 'voltage'
@@ -438,9 +424,21 @@
 			? oldVoltage
 			: oldCurrent;
 
-		if (current.value !== newValue) {
-			old.value = current.value;
-			current.value = newValue;
+		if (current !== newValue) {
+			old.value = current;
+			if (isInput) {
+				if (type === 'voltage') {
+					inputVoltage.value = newValue;
+				} else {
+					inputCurrent.value = newValue;
+				}
+			} else {
+				if (type === 'voltage') {
+					nowVoltage.value = newValue;
+				} else {
+					nowCurrent.value = newValue;
+				}
+			}
 
 			if (type === 'voltage' || type === 'current') {
 				power.value = nowVoltage.value * nowCurrent.value;
@@ -455,27 +453,34 @@
 		}
 	};
 
-	const handleErrorType = (value) => {
-		const errorTypes = {
-			[STATUS_MAPPINGS.ERROR_TYPE.OFFLINE]: '电源掉线',
+	const handleErrorType = (value: number): void => {
+		const errorTypes: Record<number, '正常' | '断线' | '过流' | '过压' | '过温'> = {
+			[STATUS_MAPPINGS.ERROR_TYPE.OFFLINE]: '断线',
 			[STATUS_MAPPINGS.ERROR_TYPE.OVERCURRENT]: '过流',
 			[STATUS_MAPPINGS.ERROR_TYPE.OVERVOLTAGE]: '过压',
 			[STATUS_MAPPINGS.ERROR_TYPE.OVERTEMP]: '过温',
 		};
-		faultType.value = errorTypes[value] || '未知错误';
+		faultType.value = errorTypes[value] ?? '正常';
 	};
 
-	const handleRunMode = (value) => {
-		const modes = Object.entries(STATUS_MAPPINGS.RUN_MODE).find(([_, v]) => v === value)?.[0];
+	const handleRunMode = (value: number): void => {
+		const modes = Object.entries(STATUS_MAPPINGS.RUN_MODE).find(([_, v]) => v === value)?.[0] as
+			| 'BUCK'
+			| 'BOOST'
+			| 'MIXED'
+			| undefined;
 		if (modes) workMode.value = modes;
 	};
 
-	const handleOutMode = (value) => {
-		const modes = Object.entries(STATUS_MAPPINGS.OUT_MODE).find(([_, v]) => v === value)?.[0];
+	const handleOutMode = (value: number): void => {
+		const modes = Object.entries(STATUS_MAPPINGS.OUT_MODE).find(([_, v]) => v === value)?.[0] as
+			| 'CV'
+			| 'CC'
+			| undefined;
 		if (modes) mode.value = modes;
 	};
 
-	const setParameter = (type) => {
+	const setParameter = (type: string): void => {
 		if (type === 'voltage') {
 			if (nowVoltage.value !== targetVoltage.value) {
 				oldVoltage.value = nowVoltage.value;
@@ -491,19 +496,19 @@
 		}
 	};
 
-	const powerOn = () => {
+	const powerOn = (): void => {
 		workStatus.value = '工作中';
 	};
 
-	const powerOff = () => {
+	const powerOff = (): void => {
 		workStatus.value = '未工作';
 	};
 
-	const clearDataHistory = () => {
+	const clearDataHistory = (): void => {
 		dataHistory.value = [];
 	};
 
-	const addDataHistory = (value, type = 'received') => {
+	const addDataHistory = (value: Uint8Array, type: 'sent' | 'received' = 'received'): void => {
 		const hexValue = Array.from(value)
 			.map((byte) => byte.toString(16).padStart(2, '0'))
 			.join(' ');
@@ -514,32 +519,34 @@
 		}
 		dataHistory.value.unshift({
 			message: hexValue,
-			type: type,
-			timestamp: timestamp,
+			type,
+			timestamp,
 		});
 	};
 
-	const updateTargetVoltage = (value) => {
-		if (value < 0) {
-			value = 0;
+	const updateTargetVoltage = (value: string): void => {
+		const numValue = parseFloat(value);
+		if (isNaN(numValue) || numValue < 0) {
+			targetVoltage.value = 0;
+		} else if (numValue > 80) {
+			targetVoltage.value = 80;
+		} else {
+			targetVoltage.value = numValue;
 		}
-		if (value > 80) {
-			value = 80;
-		}
-		targetVoltage.value = parseFloat(value);
 	};
 
-	const updateTargetCurrent = (value) => {
-		if (value < 0) {
-			value = 0;
+	const updateTargetCurrent = (value: string): void => {
+		const numValue = parseFloat(value);
+		if (isNaN(numValue) || numValue < 0) {
+			targetCurrent.value = 0;
+		} else if (numValue > 5) {
+			targetCurrent.value = 5;
+		} else {
+			targetCurrent.value = numValue;
 		}
-		if (value > 5) {
-			value = 5;
-		}
-		targetCurrent.value = parseFloat(value);
 	};
 
-	const calculateChecksum = (value) => {
+	const calculateChecksum = (value: Uint8Array): number => {
 		let calculatedChecksum = 0;
 		for (let i = 0; i < 6 - 2; i++) {
 			calculatedChecksum += value[i];
@@ -548,27 +555,25 @@
 		return calculatedChecksum;
 	};
 
-	const animateValue = (type, isInput = false) => {
+	const animateValue = (type: string, isInput = false): void => {
 		const animationRef = isInput
 			? type === 'voltage'
 				? inputVoltageAnimation
 				: inputCurrentAnimation
 			: type === 'voltage'
 			? voltageAnimation
-			: type === 'current'
-			? currentAnimation
-			: type === 'efficiency'
-			? efficiencyAnimation
-			: powerAnimation;
+			: currentAnimation;
 
-		if (animationRef.value) {
+		if (animationRef?.value) {
 			animationRef.value.classList.remove('fade-in');
 			void animationRef.value.offsetWidth;
 			animationRef.value.classList.add('fade-in');
 		}
 	};
 
-	const showDataDetail = (item) => {
+	const showDataDetail = (item: DataHistoryItem): void => {
+		console.log(item.message);
+
 		const dialog = showDialog({
 			title: '数据详情',
 			width: '500px',
@@ -610,22 +615,46 @@
 		});
 	};
 
-	const formatValue = (type, value) => {
+	const formatValue = (type: string, value: number): string => {
 		if (type === 'efficiency' || type === 'power') {
 			return value.toFixed(1);
 		}
 		return formatNumber(value, 2);
 	};
+
+	const sendData = (type: FunctionType, value: number, label: string): void => {
+		if (!device.value?.writable) {
+			showAlert('请先连接设备');
+			return;
+		}
+		const writer = device.value.writable.getWriter();
+		const roundedValue = Math.round(value * 100);
+		const data = new Uint8Array([
+			type & 0xff,
+			(type >> 8) & 0xff,
+			roundedValue & 0xff,
+			(roundedValue >> 8) & 0xff,
+			0,
+			0,
+		]);
+		const checksum = calculateChecksum(data);
+		data[4] = checksum & 0xff;
+		data[5] = (checksum >> 8) & 0xff;
+		writer.write(data);
+		writer.releaseLock();
+		addDataHistory(data, 'sent');
+		console.log(`发送${label}数据:`, value);
+	};
+
+	const sendVoltageData = (): void => {
+		sendData(FunctionType.VREF, targetVoltage.value, '电压');
+	};
+
+	const sendCurrentData = (): void => {
+		sendData(FunctionType.IREF, targetCurrent.value, '电流');
+	};
 </script>
 
 <style>
 	@import url('./css/app.css');
-
-	.data-detail {
-		text-align: left;
-	}
-
-	.data-dialog {
-		margin-left: 100px;
-	}
 </style>

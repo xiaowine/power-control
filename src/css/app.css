@@ -1340,3 +1340,11 @@ html {
     gap: 12px;
   }
 }
+
+.data-detail {
+  text-align: left;
+}
+
+.data-dialog {
+  margin-left: 100px;
+}
