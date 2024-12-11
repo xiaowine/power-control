@@ -25,6 +25,7 @@ export enum ReportType {
 	RUN_ERROR_TYPE = 4,
 	RUN_MODE = 5,
 	OUT_MODE = 6,
+	EN = 7,
 }
 
 export interface StatusMappings {
@@ -38,7 +39,7 @@ export interface StatusMappings {
 		CC: number;
 	};
 	ERROR_TYPE: {
-		OFFLINE: number;
+		NONE: number;
 		OVERCURRENT: number;
 		OVERVOLTAGE: number;
 		OVERTEMP: number;

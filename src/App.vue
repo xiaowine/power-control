@@ -168,7 +168,7 @@
 					<div class="status-label">故障类型</div>
 					<div class="status-options error-options">
 						<span
-							v-for="error in ['正常', '断线', '过流', '过压', '过温']"
+							v-for="error in ['正常', '过流', '过压', '过温']"
 							:key="error"
 							:class="['status-option', { active: faultType === error }]"
 						>
@@ -249,8 +249,8 @@
 	// 工作状态
 	const workMode = ref<'BUCK' | 'BOOST' | 'MIXED'>('BUCK');
 	const workStatus = ref<'未工作' | '工作中'>('未工作');
-	const mode = ref<'CV' | 'CC'>('CC');
-	const faultType = ref<'正常' | '断线' | '过流' | '过压' | '过温'>('正常');
+	const mode = ref<'CV' | 'CC'>('CV');
+	const faultType = ref<'正常' | '过流' | '过压' | '过温'>('正常');
 
 	// 数据历史
 	const dataHistory = ref<DataHistoryItem[]>([]);
@@ -267,7 +267,7 @@
 		RUN_MODE: { BUCK: 0, BOOST: 1, MIXED: 2 },
 		OUT_MODE: { CV: 0, CC: 1 },
 		ERROR_TYPE: {
-			OFFLINE: 0,
+			NONE: 0,
 			OVERCURRENT: 1,
 			OVERVOLTAGE: 2,
 			OVERTEMP: 3,
@@ -375,6 +375,7 @@
 				[ReportType.RUN_ERROR_TYPE]: () => handleErrorType(frame_data.Value),
 				[ReportType.RUN_MODE]: () => handleRunMode(frame_data.Value),
 				[ReportType.OUT_MODE]: () => handleOutMode(frame_data.Value),
+				[ReportType.EN]: () => handleEn(frame_data.Value),
 			};
 
 			handlers[frame_data.FunctionCode]?.();
@@ -487,9 +488,9 @@
 		}
 	};
 
-	function getErrorTypeDescription(value: number): '正常' | '断线' | '过流' | '过压' | '过温' {
-		const errorTypes: Record<number, '正常' | '断线' | '过流' | '过压' | '过温'> = {
-			[STATUS_MAPPINGS.ERROR_TYPE.OFFLINE]: '断线',
+	function getErrorTypeDescription(value: number): '正常' | '过流' | '过压' | '过温' {
+		const errorTypes: Record<number, '正常' | '过流' | '过压' | '过温'> = {
+			[STATUS_MAPPINGS.ERROR_TYPE.NONE]: '正常',
 			[STATUS_MAPPINGS.ERROR_TYPE.OVERCURRENT]: '过流',
 			[STATUS_MAPPINGS.ERROR_TYPE.OVERVOLTAGE]: '过压',
 			[STATUS_MAPPINGS.ERROR_TYPE.OVERTEMP]: '过温',
@@ -526,6 +527,10 @@
 
 	const handleOutMode = (value: number): void => {
 		handleMode(value, STATUS_MAPPINGS.OUT_MODE, mode, '未知输出模式');
+	};
+
+	const handleEn = (value: number): void => {
+		workStatus.value = value === 1 ? '工作中' : '未工作';
 	};
 
 	function getRunModeDescription(value: number): string {
@@ -750,7 +755,6 @@
 
 	const toggleMode = (newMode: 'CV' | 'CC'): void => {
 		if (mode.value !== newMode) {
-			mode.value = newMode;
 			sendData(FunctionType.OUT_MODE, newMode === 'CV' ? 0 : 1, '模式');
 		}
 	};
