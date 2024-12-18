@@ -12,7 +12,7 @@
 				</button>
 			</div>
 			<div class="input-parameters">
-				<h4>输入参数</h4>
+				<!-- <h4>输入参数</h4> -->
 				<div class="card-grid">
 					<div class="card">
 						<span class="output-label">电压</span>
