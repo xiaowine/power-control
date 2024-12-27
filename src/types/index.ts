@@ -40,8 +40,13 @@ export interface StatusMappings {
 	};
 	ERROR_TYPE: {
 		NONE: number;
-		OVERCURRENT: number;
-		OVERVOLTAGE: number;
-		OVERTEMP: number;
+		VIN_UVP_ER: number;
+		VIN_OVP_ER: number;
+		VOUT_UVP_ER: number;
+		VOUT_OVP_ER: number;
+		IIN_OCP_ER: number;
+		IOUT_OCP_ER: number;
+		SHORT_ER: number;
+		TEMP_OVP_ER: number;
 	};
 }

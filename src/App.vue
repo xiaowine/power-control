@@ -168,7 +168,17 @@
 					<div class="status-label">故障类型</div>
 					<div class="status-options error-options">
 						<span
-							v-for="error in ['正常', '过流', '过压', '过温']"
+							v-for="error in [
+								'正常',
+								'输入欠压保护',
+								'输入过压保护',
+								'输出欠压保护',
+								'输出过压保护',
+								'输入过流保护',
+								'输出过流保护',
+								'输出短路保护',
+								'温度过高保护',
+							]"
 							:key="error"
 							:class="['status-option', { active: faultType === error }]"
 						>
@@ -215,7 +225,16 @@
 	import { FunctionType, ReportType } from './types';
 	import type { SerialPort } from './types/serial';
 
-	// ===== 状态变��分组 =====
+	const VMULTIPLE = 31.6;
+	const ADC_MAX = 4096;
+	const IMULTIPLE = 62;
+	const Resistance = 0.005;
+
+	const REALITY_V = (VMULTIPLE * 3.3) / ADC_MAX; // V
+	const REALITY_I = 3.3 / (IMULTIPLE * ADC_MAX * Resistance); // A
+	const ADC_V = ADC_MAX / (VMULTIPLE * 3.3); // 电压采样值
+	const ADC_I = (ADC_MAX * IMULTIPLE * Resistance) / 3.3; // 电流采样值
+	// ===== 状态变量分组 =====
 	// UI 动画相关的 refs
 	const voltageAnimation = ref<HTMLElement>();
 	const currentAnimation = ref<HTMLElement>();
@@ -250,7 +269,17 @@
 	const workMode = ref<'BUCK' | 'BOOST' | 'MIXED'>('BUCK');
 	const workStatus = ref<'未工作' | '工作中'>('未工作');
 	const mode = ref<'CV' | 'CC'>('CV');
-	const faultType = ref<'正常' | '过流' | '过压' | '过温'>('正常');
+	const faultType = ref<
+		| '正常'
+		| '输入欠压保护'
+		| '输入过压保护'
+		| '输出欠压保护'
+		| '输出过压保护'
+		| '输入过流保护'
+		| '输出过流保护'
+		| '输出短路保护'
+		| '温度过高保护'
+	>('正常');
 
 	// 数据历史
 	const dataHistory = ref<DataHistoryItem[]>([]);
@@ -268,9 +297,14 @@
 		OUT_MODE: { CV: 0, CC: 1 },
 		ERROR_TYPE: {
 			NONE: 0,
-			OVERCURRENT: 1,
-			OVERVOLTAGE: 2,
-			OVERTEMP: 3,
+			VIN_UVP_ER: 1,
+			VIN_OVP_ER: 2,
+			VOUT_UVP_ER: 3,
+			VOUT_OVP_ER: 4,
+			IIN_OCP_ER: 5,
+			IOUT_OCP_ER: 6,
+			SHORT_ER: 7,
+			TEMP_OVP_ER: 8,
 		},
 	};
 
@@ -368,10 +402,10 @@
 			}
 
 			const handlers: Record<number, () => void> = {
-				[ReportType.VIN]: () => updateValue('voltage', frame_data.Value / 100, true),
-				[ReportType.IIN]: () => updateValue('current', frame_data.Value / 100, true),
-				[ReportType.VOUT]: () => updateValue('voltage', frame_data.Value / 100, false),
-				[ReportType.IOUT]: () => updateValue('current', frame_data.Value / 100, false),
+				[ReportType.VIN]: () => updateVoltage(frame_data.Value * REALITY_V, true),
+				[ReportType.IIN]: () => updateCurrent(frame_data.Value * REALITY_I, true),
+				[ReportType.VOUT]: () => updateVoltage(frame_data.Value * REALITY_V, false),
+				[ReportType.IOUT]: () => updateCurrent(frame_data.Value * REALITY_I, false),
 				[ReportType.RUN_ERROR_TYPE]: () => handleErrorType(frame_data.Value),
 				[ReportType.RUN_MODE]: () => handleRunMode(frame_data.Value),
 				[ReportType.OUT_MODE]: () => handleOutMode(frame_data.Value),
@@ -387,41 +421,37 @@
 	};
 
 	// ===== 值更新和动画相关方法 =====
-	const updateValue = (type: 'voltage' | 'current', newValue: number, isInput = false): void => {
-		const current = isInput
-			? type === 'voltage'
-				? inputVoltage.value
-				: inputCurrent.value
-			: type === 'voltage'
-			? nowVoltage.value
-			: nowCurrent.value;
-
-		const old = isInput
-			? type === 'voltage'
-				? oldInputVoltage
-				: oldInputCurrent
-			: type === 'voltage'
-			? oldVoltage
-			: oldCurrent;
+	const updateVoltage = (newValue: number, isInput = false): void => {
+		const current = isInput ? inputVoltage.value : nowVoltage.value;
+		const old = isInput ? oldInputVoltage : oldVoltage;
 
 		if (current !== newValue) {
 			old.value = current;
 			if (isInput) {
-				if (type === 'voltage') {
-					inputVoltage.value = newValue;
-				} else {
-					inputCurrent.value = newValue;
-				}
+				inputVoltage.value = newValue;
 			} else {
-				if (type === 'voltage') {
-					nowVoltage.value = newValue;
-				} else {
-					nowCurrent.value = newValue;
-				}
+				nowVoltage.value = newValue;
 			}
 
 			updatePowerAndEfficiency();
-			animateValue(type, isInput);
+			animateValue('voltage', isInput);
+		}
+	};
+
+	const updateCurrent = (newValue: number, isInput = false): void => {
+		const current = isInput ? inputCurrent.value : nowCurrent.value;
+		const old = isInput ? oldInputCurrent : oldCurrent;
+
+		if (current !== newValue) {
+			old.value = current;
+			if (isInput) {
+				inputCurrent.value = newValue;
+			} else {
+				nowCurrent.value = newValue;
+			}
+
+			updatePowerAndEfficiency();
+			animateValue('current', isInput);
 		}
 	};
 
@@ -487,13 +517,39 @@
 			}, 60000);
 		}
 	};
-
-	function getErrorTypeDescription(value: number): '正常' | '过流' | '过压' | '过温' {
-		const errorTypes: Record<number, '正常' | '过流' | '过压' | '过温'> = {
+	function getErrorTypeDescription(
+		value: number
+	):
+		| '正常'
+		| '输入欠压保护'
+		| '输入过压保护'
+		| '输出欠压保护'
+		| '输出过压保护'
+		| '输入过流保护'
+		| '输出过流保护'
+		| '输出短路保护'
+		| '温度过高保护' {
+		const errorTypes: Record<
+			number,
+			| '正常'
+			| '输入欠压保护'
+			| '输入过压保护'
+			| '输出欠压保护'
+			| '输出过压保护'
+			| '输入过流保护'
+			| '输出过流保护'
+			| '输出短路保护'
+			| '温度过高保护'
+		> = {
 			[STATUS_MAPPINGS.ERROR_TYPE.NONE]: '正常',
-			[STATUS_MAPPINGS.ERROR_TYPE.OVERCURRENT]: '过流',
-			[STATUS_MAPPINGS.ERROR_TYPE.OVERVOLTAGE]: '过压',
-			[STATUS_MAPPINGS.ERROR_TYPE.OVERTEMP]: '过温',
+			[STATUS_MAPPINGS.ERROR_TYPE.VIN_UVP_ER]: '输入欠压保护',
+			[STATUS_MAPPINGS.ERROR_TYPE.VIN_OVP_ER]: '输入过压保护',
+			[STATUS_MAPPINGS.ERROR_TYPE.VOUT_UVP_ER]: '输出欠压保护',
+			[STATUS_MAPPINGS.ERROR_TYPE.VOUT_OVP_ER]: '输出过压保护',
+			[STATUS_MAPPINGS.ERROR_TYPE.IIN_OCP_ER]: '输入过流保护',
+			[STATUS_MAPPINGS.ERROR_TYPE.IOUT_OCP_ER]: '输出过流保护',
+			[STATUS_MAPPINGS.ERROR_TYPE.SHORT_ER]: '输出短路保护',
+			[STATUS_MAPPINGS.ERROR_TYPE.TEMP_OVP_ER]: '温度过高保护',
 		};
 		return errorTypes[value] ?? '正常';
 	}
@@ -564,17 +620,17 @@
 
 			// 解析发送的数据
 			const sendExplanations: Record<number, string> = {
-				[FunctionType.VREF]: `设置电压: ${frameData.Value / 100} V`,
-				[FunctionType.IREF]: `设置电流: ${frameData.Value / 100} A`,
+				[FunctionType.VREF]: `设置电压: ${frameData.Value * ADC_V} V`,
+				[FunctionType.IREF]: `设置电流: ${frameData.Value * ADC_I} A`,
 				[FunctionType.EN]: `${frameData.Value === 1 ? '开机' : '关机'}`,
 				[FunctionType.OUT_MODE]: `设置模式: ${frameData.Value === 0 ? 'CV' : 'CC'}`,
 			};
 			// 解析接收的数据
 			const receiveExplanations: Record<number, string> = {
-				[ReportType.VIN]: `输入电压: ${frameData.Value / 100} V`,
-				[ReportType.IIN]: `输入电流: ${frameData.Value / 100} A`,
-				[ReportType.VOUT]: `输出电压: ${frameData.Value / 100} V`,
-				[ReportType.IOUT]: `输出电流: ${frameData.Value / 100} A`,
+				[ReportType.VIN]: `输入电压: ${frameData.Value * REALITY_V} V`,
+				[ReportType.IIN]: `输入电流: ${frameData.Value * REALITY_I} A`,
+				[ReportType.VOUT]: `输出电压: ${frameData.Value * REALITY_V} V`,
+				[ReportType.IOUT]: `输出电流: ${frameData.Value * REALITY_I} A`,
 				[ReportType.RUN_ERROR_TYPE]: `错误类型: ${getErrorTypeDescription(frameData.Value)}`,
 				[ReportType.RUN_MODE]: `运行模式: ${getRunModeDescription(frameData.Value)}`,
 				[ReportType.OUT_MODE]: `输出模式: ${getOutModeDescription(frameData.Value)}`,
@@ -611,22 +667,24 @@
 	};
 
 	const updateTargetVoltage = (value: string): void => {
-		const numValue = parseFloat(value);
+		let numValue = parseFloat(value);
+		numValue = numValue * ADC_V;
 		if (isNaN(numValue) || numValue < 0) {
 			targetVoltage.value = 0;
-		} else if (numValue > 80) {
-			targetVoltage.value = 80;
+		} else if (numValue > 4095) {
+			targetVoltage.value = 4095;
 		} else {
 			targetVoltage.value = numValue;
 		}
 	};
 
 	const updateTargetCurrent = (value: string): void => {
-		const numValue = parseFloat(value);
+		let numValue = parseFloat(value);
+		numValue = numValue * ADC_I;
 		if (isNaN(numValue) || numValue < 0) {
 			targetCurrent.value = 0;
-		} else if (numValue > 5) {
-			targetCurrent.value = 5;
+		} else if (numValue > 4095) {
+			targetCurrent.value = 4095;
 		} else {
 			targetCurrent.value = numValue;
 		}
@@ -726,7 +784,7 @@
 				setup() {
 					return () =>
 						h('div', { class: 'dialog-footer' }, [
-							h('button', { onClick: () => dialog.close(), class: 'cancel-btn' }, '取消'),
+							h('button', { onClick: () => dialog.close(), class: 'cancel-btn' }, '���消'),
 							h(
 								'button',
 								{
