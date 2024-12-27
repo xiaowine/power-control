@@ -28,25 +28,11 @@ export enum ReportType {
 	EN = 7,
 }
 
-export interface StatusMappings {
-	RUN_MODE: {
-		BUCK: number;
-		BOOST: number;
-		MIXED: number;
-	};
-	OUT_MODE: {
-		CV: number;
-		CC: number;
-	};
-	ERROR_TYPE: {
-		NONE: number;
-		VIN_UVP_ER: number;
-		VIN_OVP_ER: number;
-		VOUT_UVP_ER: number;
-		VOUT_OVP_ER: number;
-		IIN_OCP_ER: number;
-		IOUT_OCP_ER: number;
-		SHORT_ER: number;
-		TEMP_OVP_ER: number;
-	};
-}
+const VMULTIPLE = 31.6;
+const ADC_MAX = 4096;
+const IMULTIPLE = 62;
+const Resistance = 0.005;
+const REALITY_V = (VMULTIPLE * 3.3) / ADC_MAX; // V
+const REALITY_I = 3.3 / (IMULTIPLE * ADC_MAX * Resistance); // A
+const ADC_V = ADC_MAX / (VMULTIPLE * 3.3); // 电压采样值
+const ADC_I = (ADC_MAX * IMULTIPLE * Resistance) / 3.3; // 电流采样值
