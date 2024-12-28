@@ -78,7 +78,7 @@
 
 	.dialog-header {
 		padding: 16px;
-		border-bottom: 1px solid var(--border-color);
+		/* border-bottom: 1px solid var(--border-color); */
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -109,7 +109,8 @@
 	}
 
 	.dialog-content {
-		padding: 16px;
+		padding-right: 16px;
+		padding-left: 16px;
 	}
 
 	.dialog-footer {

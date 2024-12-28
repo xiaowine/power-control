@@ -6,7 +6,7 @@
 				<span class="output-label">电压</span>
 				<div class="value-container">
 					<span class="value-display">
-						{{ formatNumber(nowVoltage, 2) }}
+						{{ formatNumber(outputVoltage, 2) }}
 						<small>V</small>
 					</span>
 					<span class="value-display value-animation" ref="voltageAnimation">
@@ -19,7 +19,7 @@
 				<span class="output-label">电流</span>
 				<div class="value-container">
 					<span class="value-display">
-						{{ formatNumber(nowCurrent, 2) }}
+						{{ formatNumber(outputCurrent, 2) }}
 						<small>A</small>
 					</span>
 					<span class="value-display value-animation" ref="currentAnimation">
@@ -50,49 +50,47 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import { ref, inject, Ref } from 'vue';
+	import { ref } from 'vue';
 	import { formatNumber, formatValue } from '@/utils/tools';
 
 	// const inputVoltage = inject<Ref<number>>('inputVoltage');
 	// const inputCurrent = inject<Ref<number>>('inputCurrent');
-	const nowVoltage = ref<number>(24.0);
-	const nowCurrent = ref<number>(5.0);
+	// const nowVoltage = ref<number>(24.0);
+	// const nowCurrent = ref<number>(5.0);
 	const oldVoltage = ref<number>(24.0);
 	const oldCurrent = ref<number>(5.0);
 	const efficiency = ref<number>(0.0);
 	const power = ref<number>(0.0);
 	const voltageAnimation = ref<HTMLElement>();
 	const currentAnimation = ref<HTMLElement>();
+
 	const props = defineProps<{
 		inputVoltage: number;
 		inputCurrent: number;
+		outputVoltage: number;
+		outputCurrent: number;
 	}>();
 
-	const updateVoltage = (newValue: number): void => {
-		const current = nowVoltage.value;
+	const updateOutputVoltage = (newValue: number): void => {
 		const old = oldVoltage;
-		if (current !== newValue) {
-			old.value = current;
-			nowVoltage.value = newValue;
+		if (old.value !== newValue) {
+			old.value = newValue;
 			updatePowerAndEfficiency();
 			animateValue('voltage');
 		}
 	};
 
-	const updateCurrent = (newValue: number): void => {
-		const current = nowCurrent.value;
+	const updateOutputCurrent = (newValue: number): void => {
 		const old = oldCurrent;
-
-		if (current !== newValue) {
-			old.value = current;
-			nowCurrent.value = newValue;
+		if (old.value !== newValue) {
+			old.value = newValue;
 			updatePowerAndEfficiency();
 			animateValue('current');
 		}
 	};
 
 	const updatePowerAndEfficiency = (): void => {
-		power.value = nowVoltage.value * nowCurrent.value;
+		power.value = props.outputVoltage * props.outputCurrent;
 		const inputPower = props.inputVoltage * props.inputCurrent;
 		if (inputPower > 0) {
 			efficiency.value = Math.min((power.value / inputPower) * 100, 100);
@@ -108,4 +106,6 @@
 			animationRef.value.classList.add('fade-in');
 		}
 	};
+
+	defineExpose({ updateOutputVoltage, updateOutputCurrent });
 </script>

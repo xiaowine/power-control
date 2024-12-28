@@ -4,56 +4,69 @@
 		<div class="target-controls">
 			<div class="target-group">
 				<div class="target-card" @click="showSettingDialog('voltage')">
-					<div class="target-value">{{ targetVoltage }}V</div>
+					<div class="target-value">{{ formatNumber(targetVoltage, 2) }}V</div>
 					<div class="target-label">设置电压</div>
 				</div>
 
 				<div class="target-card" @click="showSettingDialog('current')">
-					<div class="target-value">{{ targetCurrent }}A</div>
+					<div class="target-value">{{ formatNumber(targetCurrent, 2) }}A</div>
 					<div class="target-label">设置电流</div>
 				</div>
 			</div>
 
 			<div class="control-group">
 				<div class="power-controls">
-					<button class="power-btn" :class="{ active: false }" @click="powerOn">
+					<button class="power-btn" :class="{ active: false }" @click="toggleWorkStatus(1)">
 						<img src="@/assets/power.svg" alt="power" class="power-icon" />
 						开机
 					</button>
-					<button class="power-btn off" @click="powerOff">关机</button>
+					<button class="power-btn off" @click="toggleWorkStatus(0)">关机</button>
 				</div>
 				<div class="mode-controls">
-					<button :class="{ active: !runMode }" @click="toggleMode(0)">CV</button>
-					<button :class="{ active: runMode }" @click="toggleMode(1)">CC</button>
+					<button :class="{ active: !outMode }" @click="toggleOutMode(0)">CV</button>
+					<button :class="{ active: outMode }" @click="toggleOutMode(1)">CC</button>
 				</div>
 			</div>
 		</div>
 	</div>
 </template>
 <script lang="ts" setup>
+	import { ADC_I, ADC_V, FunctionType } from '@/types';
 	import { showDialog } from '@/utils/dialog';
+	import { formatNumber } from '@/utils/tools';
 	import { h, ref } from 'vue';
 
-	const targetVoltage = ref<number>(20.0);
-	const targetCurrent = ref<number>(4.0);
 	const props = defineProps<{
-		runMode: number;
+		workStatus: number;
+		outMode: number;
+		targetVoltage: number;
+		targetCurrent: number;
 	}>();
+	const emit = defineEmits();
 
-	const toggleMode = (newMode: number): void => {
-		if (props.runMode !== newMode) {
-			// deviceStatus.value.sendData(FunctionType.OUT_MODE, newMode === 'CV' ? 0 : 1, '模式');
+	const toggleWorkStatus = (newStatus: number): void => {
+		if (!newStatus) {
+			emit('sendDataEvent', FunctionType.EN, 0);
+		} else {
+			hintDialog('电源开关', `确定要${newStatus ? '开启' : '关闭'}电源吗？`, () => {
+				if (!props.workStatus || !newStatus) {
+					emit('sendDataEvent', FunctionType.EN, !props.workStatus);
+				}
+			});
 		}
 	};
-	const powerOn = (): void => {
-		// deviceStatus.value.sendData(FunctionType.EN, 1, '开机');
+
+	const toggleOutMode = (newMode: number): void => {
+		hintDialog('切换模式', `确定要切换到${newMode === 0 ? 'CV' : 'CC'}模式吗？`, () => {
+			if (props.outMode !== newMode) {
+				emit('sendDataEvent', FunctionType.OUT_MODE, props.outMode);
+			}
+		});
 	};
-	const powerOff = (): void => {
-		// deviceStatus.value.sendData(FunctionType.EN, 0, '关机');
-	};
+
 	const showSettingDialog = (type: 'voltage' | 'current') => {
 		const isVoltage = type === 'voltage';
-		const tempValue = ref(isVoltage ? targetVoltage.value : targetCurrent.value);
+		const tempValue = ref(isVoltage ? props.targetVoltage : props.targetCurrent);
 		const maxValue = isVoltage ? 80 : 5;
 		const unit = isVoltage ? 'V' : 'A';
 
@@ -65,7 +78,7 @@
 						h('div', { class: 'dialog-input-container' }, [
 							h('input', {
 								type: 'number',
-								value: tempValue.value,
+								value: formatNumber(tempValue.value, 2),
 								onInput: (e: Event) => {
 									const value = (e.target as HTMLInputElement).value;
 									const num = parseFloat(value);
@@ -90,12 +103,47 @@
 								{
 									onClick: () => {
 										if (isVoltage) {
-											targetVoltage.value = tempValue.value;
-											// sendVoltageData();
+											emit('sendDataEvent', FunctionType.VREF, tempValue.value * ADC_V);
 										} else {
-											targetCurrent.value = tempValue.value;
-											// sendCurrentData();
+											emit('sendDataEvent', FunctionType.IREF, tempValue.value * ADC_I);
 										}
+										dialog.close();
+									},
+									class: 'confirm-btn',
+								},
+								'确定'
+							),
+						]);
+				},
+			},
+		});
+	};
+
+	const hintDialog = (title: string, message: string, callback: () => void) => {
+		const dialog = showDialog({
+			title: title,
+			content: {
+				setup() {
+					return () => h('div', { class: 'dialog-content' }, [h('p', null, message)]);
+				},
+			},
+			footer: {
+				setup() {
+					return () =>
+						h('div', { class: 'dialog-footer' }, [
+							h(
+								'button',
+								{
+									onClick: () => dialog.close(),
+									class: 'cancel-btn',
+								},
+								'取消'
+							),
+							h(
+								'button',
+								{
+									onClick: () => {
+										callback();
 										dialog.close();
 									},
 									class: 'confirm-btn',

@@ -48,13 +48,17 @@
 	import type { SerialPort } from '@/types/serial';
 
 	import { ref } from 'vue';
-	import { FunctionType } from '@/types';
 	import { showAlert } from '@/utils/dialog';
 	import { formatNumber, dataParse, calculateChecksum } from '@/utils/tools';
+	import { REALITY_I, REALITY_V, ReportType } from '@/types';
 
-	// 输入参数
-	const inputVoltage = ref<number>(24.0);
-	const inputCurrent = ref<number>(5.0);
+	defineProps<{
+		inputVoltage: number;
+		inputCurrent: number;
+	}>();
+
+	const emit = defineEmits();
+
 	const oldInputVoltage = ref<number>(24.0);
 	const oldInputCurrent = ref<number>(5.0);
 
@@ -131,6 +135,7 @@
 		} catch (error) {
 			console.error('读取数据错误:', error);
 			showAlert('数据读取错误，连接已断开');
+			disconnectDevice();
 		} finally {
 			reader?.releaseLock();
 		}
@@ -148,51 +153,58 @@
 				buffer = [];
 				return;
 			}
-			// console.log('sssssss');
-			// console.log(frame_data.CheckValue);
-			// console.log(frame_data.FunctionCode);
-			// console.log(frame_data.Value);
-			// 	const handlers: Record<number, () => void> = {
-			// 		[ReportType.VIN]: () => updateVoltage(frame_data.Value * REALITY_V, true),
-			// 		[ReportType.IIN]: () => updateCurrent(frame_data.Value * REALITY_I, true),
-			// 		[ReportType.VOUT]: () => updateVoltage(frame_data.Value * REALITY_V, false),
-			// 		[ReportType.IOUT]: () => updateCurrent(frame_data.Value * REALITY_I, false),
-			// 		[ReportType.RUN_ERROR_TYPE]: () => handleErrorType(frame_data.Value),
-			// 		[ReportType.RUN_MODE]: () => handleRunMode(frame_data.Value),
-			// 		[ReportType.OUT_MODE]: () => handleOutMode(frame_data.Value),
-			// 		[ReportType.EN]: () => handleEn(frame_data.Value),
-			// 	};
+			const newValue = frame_data.Value;
+			const handlers: Record<number, () => void> = {
+				[ReportType.VIN]: () => {
+					emit('updateInputVoltageEvent', newValue * REALITY_V);
+				},
+				[ReportType.IIN]: () => {
+					emit('updateInputCurrentEvent', newValue * REALITY_I);
+				},
+				[ReportType.VOUT]: () => {
+					emit('updateOutputVoltageEvent', newValue * REALITY_V);
+				},
+				[ReportType.IOUT]: () => {
+					emit('updateOutputCurrentEvent', newValue * REALITY_I);
+				},
+				[ReportType.RUN_ERROR_TYPE]: () => {
+					emit('updateRunErrorTypeEvent', newValue);
+				},
+				[ReportType.RUN_MODE]: () => {
+					emit('updateRunModeEvent', newValue);
+				},
+				[ReportType.OUT_MODE]: () => {
+					emit('updateOutModeEvent', newValue);
+				},
+				[ReportType.EN]: () => {
+					emit('updateEnEvent', newValue);
+				},
+				[ReportType.TargetV]: () => {
+					emit('updateTargetVEvent', newValue * REALITY_V);
+				},
+				[ReportType.TargetI]: () => {
+					emit('updateTargetIEvent', newValue * REALITY_I);
+				},
+			};
 
-			// 	handlers[frame_data.FunctionCode]?.();
-			// 	addDataHistory(data);
+			handlers[frame_data.FunctionCode]?.();
+			emit('addDataHistoryEvent', data, 'received');
 		}
 		buffer = [];
 	};
 
 	// ===== 控制命令相关方法 =====
-	const sendData = (type: FunctionType, value: number, label: string = '未知'): void => {
+	const sendData = (data: Uint8Array, value: number, label: string = '未知'): boolean => {
 		if (!device.value?.writable) {
 			showAlert('请先连接设备');
-			return;
+			return false;
 		}
-
-		const data = new Uint8Array([
-			type & 0xff,
-			(type >> 8) & 0xff,
-			value & 0xff,
-			(value >> 8) & 0xff,
-			0,
-			0,
-		]);
-
 		const writer = device!.value.writable.getWriter();
-		const checksum = calculateChecksum(data);
-		data[4] = checksum & 0xff;
-		data[5] = (checksum >> 8) & 0xff;
 		writer.write(data);
 		writer.releaseLock();
 		// addDataHistory(data, 'sent');
 		console.log(`发送${label}数据:`, value);
+		return true;
 	};
 
 	defineExpose({ disconnectDevice, sendData });

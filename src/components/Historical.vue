@@ -26,6 +26,10 @@
 	}>();
 	const emit = defineEmits();
 
+	// const addDataHistory = (value: Uint8Array, type: 'sent' | 'received' = 'received') => {
+	// 	emit('addDataHistoryEvent', value, type);
+	// };
+
 	const showDataDetail = (item: DataHistoryItem): void => {
 		const dialog = showDialog({
 			title: '数据详情',
@@ -96,7 +100,7 @@
 			// } else {
 			// 	return receiveExplanations[frameData.FunctionCode];
 			// }
-			return '';
+			return '待补充';
 		} catch (error) {
 			console.error('解析数据帧错误:', error);
 			return '数据解析错误';

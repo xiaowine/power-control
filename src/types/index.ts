@@ -26,13 +26,15 @@ export enum ReportType {
 	RUN_MODE = 5,
 	OUT_MODE = 6,
 	EN = 7,
+	TargetV = 8,
+	TargetI = 9,
 }
 
 const VMULTIPLE = 31.6;
 const ADC_MAX = 4096;
 const IMULTIPLE = 62;
 const Resistance = 0.005;
-const REALITY_V = (VMULTIPLE * 3.3) / ADC_MAX; // V
-const REALITY_I = 3.3 / (IMULTIPLE * ADC_MAX * Resistance); // A
-const ADC_V = ADC_MAX / (VMULTIPLE * 3.3); // 电压采样值
-const ADC_I = (ADC_MAX * IMULTIPLE * Resistance) / 3.3; // 电流采样值
+export const REALITY_V = (VMULTIPLE * 3.3) / ADC_MAX; // V
+export const REALITY_I = 3.3 / (IMULTIPLE * ADC_MAX * Resistance); // A
+export const ADC_V = ADC_MAX / (VMULTIPLE * 3.3); // 电压采样值
+export const ADC_I = (ADC_MAX * IMULTIPLE * Resistance) / 3.3; // 电流采样值

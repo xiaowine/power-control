@@ -29,25 +29,12 @@
 			</div>
 
 			<div class="status-tab">
-				<div class="status-label">输出模式</div>
-				<div class="status-options">
-					<span
-						v-for="outputMode in outModeLists"
-						:key="outputMode"
-						:class="['status-option', { active: runMode === outModeLists.indexOf(outputMode) }]"
-					>
-						{{ outputMode }}
-					</span>
-				</div>
-			</div>
-
-			<div class="status-tab">
 				<div class="status-label">故障类型</div>
 				<div class="status-options error-options">
 					<span
-						v-for="error in errorLists"
+						v-for="error in Array.from(errorMaps.values())"
 						:key="error"
-						:class="['status-option', { active: faultType === errorLists.indexOf(error) }]"
+						:class="['status-option', { active: error === errorMaps.get(faultType) }]"
 					>
 						{{ error }}
 					</span>
@@ -59,22 +46,21 @@
 <script lang="ts" setup>
 	const workStatusLists = ['未工作', '工作中'];
 	const runModeLists = ['BUCK', 'BOOST', 'MIXED'];
-	const outModeLists = ['CV', 'CC'];
-	const errorLists = [
-		'正常',
-		'输入欠压保护',
-		'输入过压保护',
-		'输出欠压保护',
-		'输出过压保护',
-		'输入过流保护',
-		'输出过流保护',
-		'输出短路保护',
-		'温度过高保护',
-	];
+	const errorMaps: Map<number, string> = new Map<number, string>([
+		[1, '输入欠压'],
+		[2, '输入过压'],
+		[3, '输出欠压'],
+		[4, '输出过压'],
+		[5, '输入过流'],
+		[6, '输出过流'],
+		[7, '输出短路'],
+		[8, '温度过高'],
+		[0, '正常'],
+	]);
+
 	defineProps<{
-		workStatus: number;
 		runMode: number;
-		outMode: number;
 		faultType: number;
+		workStatus: number;
 	}>();
 </script>
