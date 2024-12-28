@@ -1025,7 +1025,7 @@ html {
     );
     border-radius: 8px;
     transition: all 0.3s var(--animate-timing);
-    padding: 12px;
+    padding: 14px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
     backdrop-filter: blur(8px);
@@ -1084,7 +1084,7 @@ html {
     box-shadow: 0 2px 4px rgba(var(--error-color-rgb), 0.2);
 }
 
-.error-options .status-option:first-child.active {
+.error-options .status-option:last-child.active {
     background: var(--success-color);
     border-color: var(--success-color);
     box-shadow: 0 2px 4px rgba(var(--success-color-rgb), 0.2);
