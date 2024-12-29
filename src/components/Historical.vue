@@ -18,8 +18,17 @@
 	</div>
 </template>
 <script lang="ts" setup>
-	import type { DataHistoryItem } from '@/types';
+	import {
+		ADC_I,
+		ADC_V,
+		FunctionType,
+		REALITY_I,
+		REALITY_V,
+		ReportType,
+		type DataHistoryItem,
+	} from '@/types';
 	import { showDialog } from '@/utils/dialog';
+	import { dataParse, formatNumber } from '@/utils/tools';
 	import { h } from 'vue';
 	defineProps<{
 		dataHistory: DataHistoryItem[];
@@ -77,30 +86,36 @@
 	function parseDataFrame(hexString: string, isSend: boolean): string {
 		try {
 			const data = new Uint8Array(hexString.split(' ').map((byte) => parseInt(byte, 16)));
+			const frameData = dataParse(data);
 
-			// // 解析发送的数据
-			// const sendExplanations: Record<number, string> = {
-			// 	[FunctionType.VREF]: `设置电压: ${frameData.Value * ADC_V} V`,
-			// 	[FunctionType.IREF]: `设置电流: ${frameData.Value * ADC_I} A`,
-			// 	[FunctionType.EN]: `${frameData.Value === 1 ? '开机' : '关机'}`,
-			// 	[FunctionType.OUT_MODE]: `设置模式: ${frameData.Value === 0 ? 'CV' : 'CC'}`,
-			// };
-			// // 解析接收的数据
-			// const receiveExplanations: Record<number, string> = {
-			// 	[ReportType.VIN]: `输入电压: ${frameData.Value * REALITY_V} V`,
-			// 	[ReportType.IIN]: `输入电流: ${frameData.Value * REALITY_I} A`,
-			// 	[ReportType.VOUT]: `输出电压: ${frameData.Value * REALITY_V} V`,
-			// 	[ReportType.IOUT]: `输出电流: ${frameData.Value * REALITY_I} A`,
-			// 	[ReportType.RUN_ERROR_TYPE]: `错误类型: ${getErrorTypeDescription(frameData.Value)}`,
-			// 	[ReportType.RUN_MODE]: `运行模式: ${getRunModeDescription(frameData.Value)}`,
-			// 	[ReportType.OUT_MODE]: `输出模式: ${getOutModeDescription(frameData.Value)}`,
-			// };
-			// if (isSend) {
-			// 	return sendExplanations[frameData.FunctionCode];
-			// } else {
-			// 	return receiveExplanations[frameData.FunctionCode];
-			// }
-			return '待补充';
+			// 解析发送的数据
+			const sendExplanations: Record<number, string> = {
+				[FunctionType.VREF]: `设置电压: ${formatNumber(frameData.Value * ADC_V, 2)} V`,
+				[FunctionType.IREF]: `设置电流: ${formatNumber(frameData.Value * ADC_I, 2)} A`,
+				[FunctionType.EN]: `${frameData.Value ? '开机' : '关机'}`,
+				[FunctionType.OUT_MODE]: `设置模式: ${frameData.Value ? 'CC' : 'CV'}`,
+				[FunctionType.CLEAR_ERROR]: '清楚故障',
+			};
+			// 解析接收的数据
+			const receiveExplanations: Record<number, string> = {
+				[ReportType.VIN]: `输入电压: ${formatNumber(frameData.Value * REALITY_V, 2)} V`,
+				[ReportType.IIN]: `输入电流: ${formatNumber(frameData.Value * REALITY_I, 2)} A`,
+				[ReportType.VOUT]: `输出电压: ${formatNumber(frameData.Value * REALITY_V, 2)} V`,
+				[ReportType.IOUT]: `输出电流: ${formatNumber(frameData.Value * REALITY_I, 2)} A`,
+				[ReportType.RUN_ERROR_TYPE]: '错误类型: ',
+				[ReportType.RUN_MODE]: `运行模式:${
+					frameData.Value == 2 ? 'MIX' : frameData.Value ? 'BOOST' : 'BUCK'
+				}`,
+				[ReportType.OUT_MODE]: `输出模式: ${frameData.Value ? 'CC' : 'CV'}`,
+				[ReportType.EN]: `工作状态: ${frameData.Value ? '工作中' : '未工作'}`,
+				[ReportType.TargetV]: `设定电压: ${formatNumber(frameData.Value * REALITY_V, 2)}`,
+				[ReportType.TargetI]: `设定电流: ${formatNumber(frameData.Value * REALITY_I, 2)}`,
+			};
+			if (isSend) {
+				return sendExplanations[frameData.FunctionCode];
+			} else {
+				return receiveExplanations[frameData.FunctionCode];
+			}
 		} catch (error) {
 			console.error('解析数据帧错误:', error);
 			return '数据解析错误';
