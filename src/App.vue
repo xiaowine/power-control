@@ -35,6 +35,7 @@
 			:runMode="runMode"
 			:outMode="outMode"
 			:faultType="runErrorType"
+			@sendDataEvent="sendData"
 		/>
 		<Historical :dataHistory="dataHistory" @clearDataHistoryEvent="clearDataHistory" />
 		<About />
