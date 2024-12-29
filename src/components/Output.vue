@@ -53,10 +53,6 @@
 	import { ref } from 'vue';
 	import { formatNumber, formatValue } from '@/utils/tools';
 
-	// const inputVoltage = inject<Ref<number>>('inputVoltage');
-	// const inputCurrent = inject<Ref<number>>('inputCurrent');
-	// const nowVoltage = ref<number>(24.0);
-	// const nowCurrent = ref<number>(5.0);
 	const oldVoltage = ref<number>(24.0);
 	const oldCurrent = ref<number>(5.0);
 	const efficiency = ref<number>(0.0);

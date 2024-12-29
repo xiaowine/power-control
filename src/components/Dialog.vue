@@ -1,13 +1,18 @@
 <template>
 	<Transition name="dialog-fade">
-		<div v-if="modelValue" class="dialog-overlay" @click="handleOverlayClick">
+		<div
+			v-if="modelValue"
+			class="dialog-overlay"
+			@mousedown="handleMouseDown"
+			@mouseup="handleMouseUp"
+		>
 			<div class="dialog-container" @click.stop>
 				<div class="dialog-header">
 					<h3>{{ title }}</h3>
 					<button class="close-btn" @click="close">×</button>
 				</div>
 				<div class="dialog-content">
-					<component :is="content" />
+					<component :is="content" @click.stop />
 				</div>
 				<div class="dialog-footer" v-if="footer">
 					<component :is="footer" />
@@ -42,10 +47,37 @@
 		emit('update:modelValue', false);
 	};
 
-	const handleOverlayClick = () => {
-		if (props.closeOnClickOverlay) {
-			close();
+	let mouseDownPosition: { x: number; y: number } | null = null;
+
+	const handleMouseDown = (event: MouseEvent) => {
+		mouseDownPosition = { x: event.clientX, y: event.clientY };
+	};
+
+	const handleMouseUp = (event: MouseEvent) => {
+		if (mouseDownPosition) {
+			const dialogContainer = document.querySelector('.dialog-container');
+			const rect = dialogContainer?.getBoundingClientRect();
+
+			if (rect) {
+				const isMouseDownInside =
+					mouseDownPosition.x >= rect.left &&
+					mouseDownPosition.x <= rect.right &&
+					mouseDownPosition.y >= rect.top &&
+					mouseDownPosition.y <= rect.bottom;
+
+				const isMouseUpInside =
+					event.clientX >= rect.left &&
+					event.clientX <= rect.right &&
+					event.clientY >= rect.top &&
+					event.clientY <= rect.bottom;
+
+				// 如果按下和松开都不在对话框内，则关闭对话框
+				if (!isMouseDownInside && !isMouseUpInside) {
+					close();
+				}
+			}
 		}
+		mouseDownPosition = null; // 重置位置
 	};
 </script>
 

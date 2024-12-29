@@ -16,7 +16,7 @@
 
 			<div class="control-group">
 				<div class="power-controls">
-					<button class="power-btn" :class="{ active: false }" @click="toggleWorkStatus(1)">
+					<button class="power-btn" :class="{ active: workStatus }" @click="toggleWorkStatus(1)">
 						<img src="@/assets/power.svg" alt="power" class="power-icon" />
 						开机
 					</button>
@@ -67,8 +67,10 @@
 	const showSettingDialog = (type: 'voltage' | 'current') => {
 		const isVoltage = type === 'voltage';
 		const tempValue = ref(isVoltage ? props.targetVoltage : props.targetCurrent);
+		const value = formatNumber(tempValue.value, 2);
 		const maxValue = isVoltage ? 80 : 5;
 		const unit = isVoltage ? 'V' : 'A';
+		const isChecking = ref(true);
 
 		const dialog = showDialog({
 			title: `设置${isVoltage ? '电压' : '电流'}`,
@@ -78,16 +80,14 @@
 						h('div', { class: 'dialog-input-container' }, [
 							h('input', {
 								type: 'number',
-								value: formatNumber(tempValue.value, 2),
+								value: value,
+								class: 'dialog-input',
+								placeholder: `请输入${isVoltage ? '电压' : '电流'}值`,
 								onInput: (e: Event) => {
 									const value = (e.target as HTMLInputElement).value;
 									const num = parseFloat(value);
-									if (num > maxValue) tempValue.value = maxValue;
-									else if (num < 0) tempValue.value = 0;
-									else tempValue.value = num;
+									tempValue.value = num;
 								},
-								class: 'dialog-input',
-								placeholder: `请输入${isVoltage ? '电压' : '电流'}值`,
 							}),
 							h('span', { class: 'dialog-unit' }, unit),
 						]);
@@ -102,16 +102,24 @@
 								'button',
 								{
 									onClick: () => {
-										if (isVoltage) {
-											emit('sendDataEvent', FunctionType.VREF, tempValue.value * ADC_V);
+										if (isChecking.value) {
+											if (tempValue.value > maxValue || tempValue.value < 0) {
+												alert(`请输入有效的${isVoltage ? '电压' : '电流'}值！`);
+											} else {
+												isChecking.value = false;
+											}
 										} else {
-											emit('sendDataEvent', FunctionType.IREF, tempValue.value * ADC_I);
+											if (isVoltage) {
+												emit('sendDataEvent', FunctionType.VREF, tempValue.value * ADC_V);
+											} else {
+												emit('sendDataEvent', FunctionType.IREF, tempValue.value * ADC_I);
+											}
+											dialog.close();
 										}
-										dialog.close();
 									},
 									class: 'confirm-btn',
 								},
-								'确定'
+								isChecking.value ? '检查' : '确定'
 							),
 						]);
 				},
