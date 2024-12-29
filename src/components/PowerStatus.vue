@@ -28,12 +28,12 @@
 				</div>
 			</div>
 
-			<div class="status-tab">
+			<div class="status-tab" @click="clearError">
 				<div class="status-label">故障类型</div>
 				<div class="status-options error-options">
 					<span
-						v-for="error in Array.from(errorMaps.values())"
-						:key="error"
+						v-for="(error, index) in Array.from(errorMaps.values())"
+						:key="index"
 						:class="['status-option', { active: error === errorMaps.get(faultType) }]"
 					>
 						{{ error }}
@@ -44,6 +44,10 @@
 	</div>
 </template>
 <script lang="ts" setup>
+	import { FunctionType } from '@/types';
+	import { hintDialog } from '@/utils/dialog';
+
+	const emit = defineEmits();
 	const workStatusLists = ['未工作', '工作中'];
 	const runModeLists = ['BUCK', 'BOOST', 'MIXED'];
 	const errorMaps: Map<number, string> = new Map<number, string>([
@@ -63,4 +67,9 @@
 		faultType: number;
 		workStatus: number;
 	}>();
+	const clearError = () => {
+		hintDialog('消除故障', `确定要消除故障吗？`, () => {
+			emit('sendDataEvent', FunctionType.CLEAR_ERROR, 0);
+		});
+	};
 </script>

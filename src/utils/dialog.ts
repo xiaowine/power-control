@@ -122,3 +122,39 @@ export function showAlert(message: string, options: Partial<DialogOptions> = {})
 	});
 	return instance;
 }
+export const hintDialog = (title: string, message: string, callback: () => void) => {
+	const dialog = showDialog({
+		title: title,
+		content: {
+			setup() {
+				return () => h('div', { class: 'dialog-content' }, [h('p', null, message)]);
+			},
+		},
+		footer: {
+			setup() {
+				return () =>
+					h('div', { class: 'dialog-footer' }, [
+						h(
+							'button',
+							{
+								onClick: () => dialog.close(),
+								class: 'cancel-btn',
+							},
+							'取消'
+						),
+						h(
+							'button',
+							{
+								onClick: () => {
+									callback();
+									dialog.close();
+								},
+								class: 'confirm-btn',
+							},
+							'确定'
+						),
+					]);
+			},
+		},
+	});
+};

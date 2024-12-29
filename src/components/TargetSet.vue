@@ -32,7 +32,7 @@
 </template>
 <script lang="ts" setup>
 	import { ADC_I, ADC_V, FunctionType } from '@/types';
-	import { showDialog } from '@/utils/dialog';
+	import { hintDialog, showDialog } from '@/utils/dialog';
 	import { formatNumber } from '@/utils/tools';
 	import { h, ref } from 'vue';
 
@@ -120,43 +120,6 @@
 									class: 'confirm-btn',
 								},
 								isChecking.value ? '检查' : '确定'
-							),
-						]);
-				},
-			},
-		});
-	};
-
-	const hintDialog = (title: string, message: string, callback: () => void) => {
-		const dialog = showDialog({
-			title: title,
-			content: {
-				setup() {
-					return () => h('div', { class: 'dialog-content' }, [h('p', null, message)]);
-				},
-			},
-			footer: {
-				setup() {
-					return () =>
-						h('div', { class: 'dialog-footer' }, [
-							h(
-								'button',
-								{
-									onClick: () => dialog.close(),
-									class: 'cancel-btn',
-								},
-								'取消'
-							),
-							h(
-								'button',
-								{
-									onClick: () => {
-										callback();
-										dialog.close();
-									},
-									class: 'confirm-btn',
-								},
-								'确定'
 							),
 						]);
 				},

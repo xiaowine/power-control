@@ -15,6 +15,7 @@ export enum FunctionType {
 	VREF = 1,
 	IREF = 2,
 	OUT_MODE = 3,
+	CLEAR_ERROR = 4,
 }
 
 export enum ReportType {
