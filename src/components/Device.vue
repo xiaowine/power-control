@@ -111,6 +111,7 @@
 			device.value = undefined;
 			isConnected.value = false;
 			clearTimeout(serialTimer);
+			serialTimer = 0;
 			buffer = [];
 		}
 	};
@@ -124,7 +125,6 @@
 			while (isConnected.value) {
 				const { value, done } = await reader.read();
 				if (done) break;
-
 				if (value) {
 					buffer.push(...Array.from(value));
 					if (serialTimer === 0) {
