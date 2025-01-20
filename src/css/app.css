@@ -46,7 +46,7 @@ body {
   padding: var(--section-padding);
   box-shadow: var(--shadow-sm);
   transition: transform 0.3s var(--animate-timing),
-              box-shadow 0.3s var(--animate-timing);
+    box-shadow 0.3s var(--animate-timing);
 }
 
 .section:hover {
@@ -118,7 +118,7 @@ button {
   margin: 10px 5px; /* 优化按钮间距 */
   transition: background-color 0.3s ease, transform 0.2s ease;
   transition: transform 0.15s var(--animate-timing),
-              background-color 0.3s var(--animate-timing);
+    background-color 0.3s var(--animate-timing);
 }
 
 button:hover {
@@ -163,7 +163,7 @@ button:active {
 .power-status > div {
   margin: 0 auto;
   text-align: left;
-  min-height: 100px;  /* 给一个合适的最小高度 */
+  min-height: 100px; /* 给一个合适的最小高度 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -313,8 +313,8 @@ button + button {
 }
 
 .info {
-  height: 410px; /* 增加高度 */
-  max-height: 410px; /* 同步增加最大高度 */
+  height: 21rem; /* 增加高度 */
+  max-height: 21rem; /* 同步增加最大高度 */
   overflow-y: auto;
   overflow-x: hidden;
   border: 1px solid var(--border-color);
@@ -323,9 +323,10 @@ button + button {
   word-wrap: break-word;
   word-break: break-all;
   box-sizing: border-box;
-  background: linear-gradient(145deg, 
-      rgba(var(--bg-primary-rgb), 0.6),
-      rgba(var(--bg-secondary-rgb), 0.8)
+  background: linear-gradient(
+    145deg,
+    rgba(var(--bg-primary-rgb), 0.6),
+    rgba(var(--bg-secondary-rgb), 0.8)
   );
   border-radius: 8px;
   backdrop-filter: blur(8px);
@@ -424,7 +425,7 @@ button + button {
 /* 在 :root 中添加文本色的 RGB 值 */
 :root {
   /* 已有的量... */
-  --text-secondary-rgb: 127, 140, 141;  /* #7f8c8d 的 RGB 值 */
+  --text-secondary-rgb: 127, 140, 141; /* #7f8c8d 的 RGB 值 */
   --cancel-color: #6c757d;
   --cancel-dark: #5a6268;
 }
@@ -486,45 +487,45 @@ button + button {
   --primary-dark: #0056b3;
   --primary-light: #e6f3ff;
   --primary-color-rgb: 0, 123, 255;
-  
+
   /* 功能色 */
   --success-color: #28a745;
   --error-color: #dc3545;
   --warning-color: #ffc107;
   --cancel-color: #6c757d;
-  
+
   /* 功能色的���色版本 */
   --success-dark: #1e7e34;
   --error-dark: #bd2130;
   --warning-dark: #d39e00;
   --cancel-dark: #5a6268;
-  
+
   /* RGB值用于透明度计算 */
   --success-color-rgb: 40, 167, 69;
   --error-color-rgb: 220, 53, 69;
   --warning-color-rgb: 255, 193, 7;
   --cancel-color-rgb: 108, 117, 125;
-  
+
   /* 文本色 */
   --text-primary: #212529;
   --text-secondary: #6c757d;
   --text-light: #adb5bd;
   --text-secondary-rgb: 108, 117, 125;
-  
+
   /* 背景色 */
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-tertiary: #e9ecef;
   --bg-primary-rgb: 255, 255, 255;
   --bg-secondary-rgb: 248, 249, 250;
-  
+
   /* 边框和阴影 */
   --border-color: #dee2e6;
   --border-radius: 12px;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
-  
+
   /* 布局和动画 */
   --container-padding: 24px;
   --grid-gap: 24px;
@@ -541,7 +542,7 @@ button + button {
     --primary-color: #007bff;
     --primary-dark: #0056b3;
     --primary-light: #0d6efd;
-    
+
     /* 调整背景色 */
     --bg-primary: #1e1e1e;
     --bg-secondary: #252525;
@@ -549,12 +550,12 @@ button + button {
     --bg-elevated: #333333;
     --bg-primary-rgb: 30, 30, 30;
     --bg-secondary-rgb: 37, 37, 37;
-    
+
     /* 调整文本色 */
     --text-primary: #ffffff;
     --text-secondary: #a0a0a0;
     --text-light: #808080;
-    
+
     /* 调整边框和阴影 */
     --border-color: rgba(255, 255, 255, 0.1);
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -616,7 +617,7 @@ html {
 }
 
 .status-icon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -4px;
   left: -4px;
@@ -757,11 +758,11 @@ html {
   .power-control-system {
     grid-template-columns: 1fr;
   }
-  
+
   .section {
     padding: 16px;
   }
-  
+
   .output-grid {
     grid-template-columns: 1fr;
   }
@@ -772,12 +773,12 @@ html {
   .power-control-system {
     display: block;
   }
-  
+
   .section {
     page-break-inside: avoid;
     margin-bottom: 20px;
   }
-  
+
   button {
     display: none;
   }
@@ -792,7 +793,7 @@ html {
   justify-content: center;
   padding: 20px;
   text-align: center;
-  background-image: url('https://sourcebucket.s3.bitiful.net/img/aurora.webp');
+  background-image: url("https://sourcebucket.s3.bitiful.net/img/aurora.webp");
   border-radius: var(--border-radius);
   overflow: hidden;
 }
@@ -810,7 +811,7 @@ html {
 .avatar-image {
   width: 100%;
   height: 100%;
-  background: url('../assets/avatar.jpg') center center no-repeat;
+  background: url("../assets/avatar.jpg") center center no-repeat;
   background-size: cover;
   transition: transform 0.3s ease;
 }
@@ -824,7 +825,7 @@ html {
   height: 32px;
   margin: 20px auto;
   opacity: 1;
-  background: url('../assets/github.svg') center center no-repeat;
+  background: url("../assets/github.svg") center center no-repeat;
   background-size: contain;
   filter: brightness(0) invert(1);
   transition: transform 0.3s ease;
@@ -839,12 +840,7 @@ html {
   font-size: 1.5em;
   font-weight: 600;
   letter-spacing: 1px;
-  background: linear-gradient(
-    90deg,
-    #4facfe 0%,
-    #00f2fe 50%,
-    #4facfe 100%
-);
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 50%, #4facfe 100%);
   background-size: 200% auto;
   color: transparent;
   -webkit-background-clip: text;
@@ -855,27 +851,25 @@ html {
   z-index: 1;
 }
 
-
 /* 调整动画速度和效果 */
 @keyframes rgb-text {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 200% 50%;
-    }
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
 }
-
 
 /* 深色模式优化 */
 @media (prefers-color-scheme: dark) {
-    .author-name {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-    }
-    
-    .author-name:hover {
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    }
+  .author-name {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+
+  .author-name:hover {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  }
 }
 
 /* 响应式调整 */
@@ -903,7 +897,7 @@ html {
 
 /* 添加背景渐变遮罩以提高文字可读性 */
 .section:last-child::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -1009,111 +1003,113 @@ html {
 
 /* 电源状态新样式 */
 .status-tabs {
-    display: flex;
-    flex-direction: row; /* 改为横向 */
-    gap: 8px;
-    /* padding: 8px; */
-    flex-wrap: wrap; /* 允许换行 */
+  display: flex;
+  flex-direction: row; /* 改为横向 */
+  gap: 8px;
+  /* padding: 8px; */
+  flex-wrap: wrap; /* 允许换行 */
 }
 
 .status-tab {
-    flex: 1;
-    min-width: 200px;
-    background: linear-gradient(145deg, 
-        rgba(var(--bg-primary-rgb), 0.6),
-        rgba(var(--bg-secondary-rgb), 0.8)
-    );
-    border-radius: 8px;
-    transition: all 0.3s var(--animate-timing);
-    padding: 14px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(8px);
+  flex: 1;
+  min-width: 200px;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--bg-primary-rgb), 0.6),
+    rgba(var(--bg-secondary-rgb), 0.8)
+  );
+  border-radius: 8px;
+  transition: all 0.3s var(--animate-timing);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(8px);
 }
 
 .status-tab:hover {
-    background: linear-gradient(145deg,
-        rgba(var(--bg-primary-rgb), 0.7),
-        rgba(var(--bg-secondary-rgb), 0.9)
-    );
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+  background: linear-gradient(
+    145deg,
+    rgba(var(--bg-primary-rgb), 0.7),
+    rgba(var(--bg-secondary-rgb), 0.9)
+  );
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .status-label {
-    font-size: 0.9em;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-options {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .status-option {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.85em;
-    background: var(--bg-primary);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-    transition: all 0.2s var(--animate-timing);
-    cursor: default;
-    flex: 1; /* 让选项平均分配间 */
-    text-align: center;
-    min-width: 50px; /* 设置最小宽度 */
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s var(--animate-timing);
+  cursor: default;
+  flex: 1; /* 让选项平均分配间 */
+  text-align: center;
+  min-width: 50px; /* 设置最小宽度 */
 }
 
 .status-option.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(var(--primary-color-rgb), 0.2);
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(var(--primary-color-rgb), 0.2);
 }
 
 /* 错误状态特殊样式 */
 .error-options .status-option.active {
-    background: var(--error-color);
-    border-color: var(--error-color);
-    box-shadow: 0 2px 4px rgba(var(--error-color-rgb), 0.2);
+  background: var(--error-color);
+  border-color: var(--error-color);
+  box-shadow: 0 2px 4px rgba(var(--error-color-rgb), 0.2);
 }
 
 .error-options .status-option:last-child.active {
-    background: var(--success-color);
-    border-color: var(--success-color);
-    box-shadow: 0 2px 4px rgba(var(--success-color-rgb), 0.2);
+  background: var(--success-color);
+  border-color: var(--success-color);
+  box-shadow: 0 2px 4px rgba(var(--success-color-rgb), 0.2);
 }
 
 /* 响应式调整 */
 @media (max-width: 1200px) {
-    .status-tabs {
-        flex-direction: column; /* 在较小屏幕上改回垂直布局 */
-    }
-    
-    .status-tab {
-        min-width: unset;
-    }
+  .status-tabs {
+    flex-direction: column; /* 在较小屏幕上改回垂直布局 */
+  }
+
+  .status-tab {
+    min-width: unset;
+  }
 }
 
 @media (max-width: 768px) {
-    .status-tab {
-        padding: 10px;
-    }
-    
-    .status-label {
-        font-size: 0.85em;
-    }
-    
-    .status-option {
-        padding: 3px 8px;
-        font-size: 0.8em;
-    }
+  .status-tab {
+    padding: 10px;
+  }
+
+  .status-label {
+    font-size: 0.85em;
+  }
+
+  .status-option {
+    padding: 3px 8px;
+    font-size: 0.8em;
+  }
 }
 
 /* 添加平滑滚动效果 */
@@ -1138,95 +1134,95 @@ html {
 
 /* 清除按钮样式 */
 .info-container {
-    position: relative; /* 为悬浮按钮提供定位上下文 */
+  position: relative; /* 为悬浮按钮提供定位上下文 */
 }
 
 .clear-btn {
-    position: absolute;
-    right: 30px;
-    bottom: 10px;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
-    box-shadow: var(--shadow-md);
-    transition: all 0.3s var(--animate-timing);
-    z-index: 10;
+  position: absolute;
+  right: 30px;
+  bottom: 10px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s var(--animate-timing);
+  z-index: 10;
 }
 
 .clear-btn:hover {
-    transform: scale(1.1) rotate(90deg);
-    background: var(--primary-dark);
-    box-shadow: var(--shadow-lg);
+  transform: scale(1.1) rotate(90deg);
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-lg);
 }
 
 .clear-btn:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 /* 添加清除图标 */
 .clear-btn::before {
-    content: "×";
-    font-size: 28px;
-    font-weight: bold;
-    line-height: 1;
+  content: "×";
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 /* 深色模式适配 */
 @media (prefers-color-scheme: dark) {
-    .clear-btn {
-        background: var(--primary-color);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .clear-btn:hover {
-        background: var(--primary-dark);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
+  .clear-btn {
+    background: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .clear-btn:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-    .clear-btn {
-        width: 40px;
-        height: 40px;
-        right: 16px;
-        bottom: 16px;
-    }
-    
-    .clear-btn::before {
-        font-size: 24px;
-    }
+  .clear-btn {
+    width: 40px;
+    height: 40px;
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .clear-btn::before {
+    font-size: 24px;
+  }
 }
 
 /* 添加动态 RGB 渐变动画 */
 @keyframes hue-rotate {
-    0% {
-        filter: hue-rotate(0deg);
-    }
-    100% {
-        filter: hue-rotate(360deg);
-    }
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
 }
 
 @keyframes rgb-text {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* 输入参数样式 */
@@ -1338,15 +1334,15 @@ html {
     padding: 16px;
     min-height: 90px;
   }
-  
+
   .value-display {
     font-size: 2em;
   }
-  
+
   .value-display small {
     font-size: 0.5em;
   }
-  
+
   .output-section .card-grid {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -1543,7 +1539,7 @@ html {
 }
 
 .power-icon {
-  width: 20px;  /* 根据需要调整大小 */
+  width: 20px; /* 根据需要调整大小 */
   height: 20px;
   vertical-align: middle;
   margin-right: 5px;
@@ -1564,8 +1560,7 @@ html {
   .power-btn {
     background: rgba(var(--bg-secondary-rgb), 0.3);
   }
-  
-  
+
   .mode-controls {
     background: rgba(var(--bg-secondary-rgb), 0.3);
   }
@@ -1576,15 +1571,15 @@ html {
   .control-group {
     gap: 12px;
   }
-  
+
   .power-controls {
     flex-direction: column;
   }
-  
+
   .power-btn {
     padding: 10px 20px;
   }
-  
+
   .mode-controls button {
     padding: 6px 12px;
   }
@@ -1593,6 +1588,6 @@ html {
 /* 深色模式下图标显示为白色 */
 @media (prefers-color-scheme: dark) {
   .power-icon {
-    filter: brightness(0) invert(1);  /* 将黑色图标转换为白色 */
+    filter: brightness(0) invert(1); /* 将黑色图标转换为白色 */
   }
 }
