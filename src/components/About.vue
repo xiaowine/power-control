@@ -4,8 +4,7 @@
     <div class="avatar-container">
       <div class="avatar-image"></div>
     </div>
-    <a href="https://github.com/xiaowine" target="_blank">
-      <div class="github-icon"></div>
+    <a href="https://github.com/xiaowine" target="_blank" class="github-icon">
     </a>
     <div class="author-name">xiao_wine</div>
   </div>
@@ -14,9 +13,8 @@
 <script setup lang="ts"></script>
 
 <style scoped>
-/* 主容器样式 */
 .about {
-  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,6 +35,7 @@
 
 /* 头像相关样式 */
 .avatar-container {
+  z-index: 3;
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -44,6 +43,17 @@
   margin: 20px auto;
   border: 4px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+.avatar-container:hover {
+  width: 140px;
+  height: 140px;
+}
+
+.avatar-container:hover .avatar-image {
+  transform: scale(1.1);
+  width: 100%;
+  height: 100%;
 }
 
 .avatar-image {
@@ -51,14 +61,12 @@
   height: 100%;
   background: url("../assets/avatar.jpg") center center no-repeat;
   background-size: cover;
-}
-
-.avatar-container:hover .avatar-image {
-  transform: scale(1.1);
+  transition: all 0.3s ease;
 }
 
 /* GitHub 图标样式 */
 .github-icon {
+  z-index: 2;
   width: 32px;
   height: 32px;
   margin: 20px auto;
@@ -67,6 +75,10 @@
   filter: brightness(0) invert(1);
   transition: transform 0.3s ease;
 }
+.github-icon:hover {
+  transform: scale(1.2);
+}
+
 /* 作者名称样式 */
 .author-name {
   margin-top: 15px;
