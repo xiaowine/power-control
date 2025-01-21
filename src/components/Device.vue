@@ -231,6 +231,7 @@ defineExpose({ disconnectDevice, sendData });
   border-radius: var(--border-radius);
   transition: var(--transition);
   gap: 16px; /* 增加间距 */
+  margin-bottom: 20px; /* 增加下边距 */
 }
 .connection-status {
   display: flex;

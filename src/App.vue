@@ -155,6 +155,56 @@ const updateTargetI = (newValue: number): void => {
 </script>
 
 <style>
+/* 重置和基础变量 */
+:root {
+  --animate-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 主题色 */
+  --primary-color: #007bff;
+  --primary-dark: #0056b3;
+  --primary-light: #e6f3ff;
+  --primary-color-rgb: 0, 123, 255;
+
+  /* 功能色 */
+  --success-color: #28a745;
+  --error-color: #dc3545;
+  --warning-color: #ffc107;
+  --cancel-color: #6c757d;
+  --success-dark: #1e7e34;
+  --error-dark: #bd2130;
+  --warning-dark: #d39e00;
+  --cancel-dark: #5a6268;
+
+  /* RGB值 */
+  --success-color-rgb: 40, 167, 69;
+  --error-color-rgb: 220, 53, 69;
+  --warning-color-rgb: 255, 193, 7;
+  --cancel-color-rgb: 108, 117, 125;
+
+  /* 文本和背景色 */
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-light: #adb5bd;
+  --text-secondary-rgb: 108, 117, 125;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --bg-primary-rgb: 255, 255, 255;
+  --bg-secondary-rgb: 248, 249, 250;
+
+  /* 布局和动画 */
+  --border-color: #dee2e6;
+  --border-radius: 12px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --container-padding: 24px;
+  --grid-gap: 24px;
+  --section-padding: 20px;
+  --animate-duration: 0.3s;
+  --transition: all 0.3s ease;
+}
+
+/* 基础样式 */
 html,
 body {
   margin: 0;
@@ -174,17 +224,26 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* 输入控件样式 */
 input[type="number"] {
   flex: 1;
   padding: 10px 15px;
   border: 1px solid var(--border-color);
   border-radius: 5px;
   font-size: 0.95em;
-  margin-left: 10px;
-  margin-right: 10px; /* 增加两侧间距 */
+  margin: 0 10px;
   transition: border-color 0.3s ease;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type="number"]:focus {
@@ -193,17 +252,6 @@ input[type="number"]:focus {
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* 隐藏input输入数字调节大小的按钮 */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
 /* 按钮样式 */
 button {
   display: inline-block;
@@ -211,12 +259,11 @@ button {
   border: none;
   border-radius: 5px;
   background-color: var(--primary-color);
+  color: white;
   font-size: 1em;
   cursor: pointer;
-  margin: 10px 5px; /* 优化按钮间距 */
+  margin: 10px 5px;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  transition: transform 0.15s var(--animate-timing),
-    background-color 0.3s var(--animate-timing);
 }
 
 button:hover {
@@ -232,7 +279,21 @@ button:disabled {
 button:active {
   transform: scale(0.95);
 }
-/* 模块容器样式 */
+
+.cancel-btn {
+  background-color: var(--cancel-color);
+}
+
+.cancel-btn:hover {
+  background-color: var(--cancel-dark);
+  transform: scale(1.05);
+}
+
+.cancel-btn:active {
+  transform: scale(0.95);
+}
+
+/* 布局容器样式 */
 .section {
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -244,6 +305,7 @@ button:active {
   transition: transform 0.3s var(--animate-timing),
     box-shadow 0.3s var(--animate-timing);
 }
+
 .section:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -252,7 +314,7 @@ button:active {
 .power-control-system {
   font-family: Arial, sans-serif;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 默认三列布局 */
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--grid-gap);
   padding: var(--container-padding);
   width: 100%;
@@ -263,10 +325,11 @@ button:active {
   box-sizing: border-box;
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
-  grid-auto-flow: dense; /* 自动填充空白区域 */
+  grid-auto-flow: dense;
   animation: fadeIn 0.5s ease-out;
 }
-/* 标题样式 */
+
+/* 标题和文本样式 */
 h3 {
   margin: 0 0 15px;
   font-size: 1.2em;
@@ -275,282 +338,13 @@ h3 {
   padding-bottom: 8px;
 }
 
-/* 添加取消按钮样式 */
-.cancel-btn {
-  background-color: var(--cancel-color);
-  /* color: var(--bg-primary); */
-}
-
-.cancel-btn:hover {
-  background-color: var(--cancel-dark);
-  transform: scale(1.05);
-}
-
-.cancel-btn:active {
-  transform: scale(0.95);
-} /* 响应式设计 */
-@media (max-width: 768px) {
-  .section {
-    padding: 10px; /* 缩小模块内边距 */
-  }
-  .power-control-system {
-    grid-template-columns: 1fr; /* 小屏幕单列布局 */
-    padding: 10px;
-    gap: 10px; /* 减少模块间距 */
-  }
-  .power-control-system {
-    grid-template-columns: 1fr;
-  }
-
-  .output-grid {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 1200px) {
-  .power-control-system {
-    grid-template-columns: 1fr 1fr; /* 中等屏幕双列布局 */
-  }
-}
-@media (min-width: 1400px) {
-  .power-control-system {
-    gap: 25px; /* 增加模块间距 */
-  }
-}
-/* 响应式布局优化 */
-@media (max-width: 1440px) {
-  .power-control-system {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 1024px) {
-  .power-control-system {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .section {
-    background-color: #2c2c2c; /* 背景色 */
-    border-color: #3c3c3c; /* 边框颜色 */
-  }
-  :root {
-    /* ... 其他深色模式变量 ... */
-    --cancel-color: #495057;
-    --cancel-dark: #343a40;
-  }
-  .power-control-system {
-    background-color: #1e1e1e; /* 背景色 */
-    color: #e0e0e0; /* 字体颜色 */
-  }
-} /* 响应式设计 */
-@media (max-width: 768px) {
-  button {
-    padding: 10px 15px; /* 缩小按钮内边距 */
-    font-size: 0.9em; /* 缩小按钮字体 */
-  }
-
-  input[type="number"],
-  select {
-    padding: 8px 10px; /* 缩小输入框内边距 */
-    font-size: 0.9em; /* 缩小输入框字体 */
-  }
-}
-
-/* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-  html,
-  body {
-    background-color: #121212; /* 背景色 */
-    color: #e0e0e0; /* 字体颜色 */
-  }
-
-  h3 {
-    color: #e0e0e0; /* 标题颜色 */
-  }
-
-  input[type="number"],
-  select {
-    background-color: #3c3c3c; /* 背景色 */
-    color: #e0e0e0; /* 字体颜色 */
-    border-color: #4c4c4c; /* 边框颜色 */
-  }
-
-  input[type="number"]:focus,
-  select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  }
-
-  button {
-    background-color: #007bff;
-    color: white;
-  }
-
-  button:hover {
-    background-color: #0056b3;
-  }
-
-  .status-dot {
-    background-color: red;
-  }
-
-  .status-dot.connected {
-    background-color: green;
-  }
-
-  .output-parameters .value {
-    color: #007bff;
-  }
-
-  .error {
-    color: red;
-  }
-
-  textarea {
-    background-color: #3c3c3c; /* 背景色 */
-    color: #e0e0e0; /* 字体颜色 */
-    border-color: #4c4c4c; /* 边框颜色 */
-  }
-
-  textarea::placeholder {
-    color: #adb5bd; /* 提示文字颜色 */
-  }
-}
-
-/* 重置和基础样式 */
-:root {
-  --animate-timing: cubic-bezier(0.4, 0, 0.2, 1);
-  /* 主题色 */
-  --primary-color: #007bff;
-  --primary-dark: #0056b3;
-  --primary-light: #e6f3ff;
-  --primary-color-rgb: 0, 123, 255;
-
-  /* 功能色 */
-  --success-color: #28a745;
-  --error-color: #dc3545;
-  --warning-color: #ffc107;
-  --cancel-color: #6c757d;
-
-  /* 功能色的���色版本 */
-  --success-dark: #1e7e34;
-  --error-dark: #bd2130;
-  --warning-dark: #d39e00;
-  --cancel-dark: #5a6268;
-
-  /* RGB值用于透明度计算 */
-  --success-color-rgb: 40, 167, 69;
-  --error-color-rgb: 220, 53, 69;
-  --warning-color-rgb: 255, 193, 7;
-  --cancel-color-rgb: 108, 117, 125;
-
-  /* 文本色 */
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --text-light: #adb5bd;
-  --text-secondary-rgb: 108, 117, 125;
-
-  /* 背景色 */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #e9ecef;
-  --bg-primary-rgb: 255, 255, 255;
-  --bg-secondary-rgb: 248, 249, 250;
-
-  /* 边框和阴影 */
-  --border-color: #dee2e6;
-  --border-radius: 12px;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
-
-  /* 布局和动画 */
-  --container-padding: 24px;
-  --grid-gap: 24px;
-  --section-padding: 20px;
-  --animate-duration: 0.3s;
-  --animate-timing: cubic-bezier(0.4, 0, 0.2, 1);
-  --transition: all 0.3s ease;
-}
-
-/* 深色模式变量 - 保持主题色不变 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* 保持主题色不变 */
-    --primary-color: #007bff;
-    --primary-dark: #0056b3;
-    --primary-light: #0d6efd;
-
-    /* 调整背景色 */
-    --bg-primary: #1e1e1e;
-    --bg-secondary: #252525;
-    --bg-tertiary: #2d2d2d;
-    --bg-elevated: #333333;
-    --bg-primary-rgb: 30, 30, 30;
-    --bg-secondary-rgb: 37, 37, 37;
-
-    /* 调整文本色 */
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0a0;
-    --text-light: #808080;
-
-    /* 调整边框和阴影 */
-    --border-color: rgba(255, 255, 255, 0.1);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
-  }
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .status-section .port-config {
-    padding: 15px;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .connection-status {
-    width: 100%;
-    justify-content: center;
-    padding: 8px 0;
-  }
-
-  .connect-btn {
-    width: 100%;
-    min-width: unset; /* 移动端取消最小宽度限制 */
-  }
-}
-
-/* 输出参数卡片样式 */
+/* 卡片样式 */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
-/* 统一过渡效果 */
-.output-card,
-.status-tab,
-.port-config,
-.info,
-.status-option {
-  transition: all 0.3s var(--animate-timing);
-}
-
-/* 输入参数样式 */
-.input-parameters {
-  margin-top: 30px;
-}
-
-.input-parameters h4 {
-  font-size: 1em;
-  color: var(--text-secondary);
-  margin: 0 0 12px;
-  font-weight: 500;
-}
-
-/* 统一卡片样式 */
 .card {
   background: linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
   padding: 20px;
@@ -571,13 +365,12 @@ h3 {
   box-shadow: var(--shadow-md);
 }
 
-/* 统一数值容器样式 */
+/* 数值显示样式 */
 .value-container {
   position: relative;
   height: 2.6em;
 }
 
-/* 统一数值显示样式 */
 .value-display {
   font-size: 2.2em;
   font-weight: 700;
@@ -600,18 +393,134 @@ h3 {
   color: var(--text-secondary);
 }
 
-/* 动画相关样式 */
-.value-animation {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  transform: translateY(-50%);
-  opacity: 0;
-  pointer-events: none;
+/* 深色模式 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --primary-light: #0d6efd;
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252525;
+    --bg-tertiary: #2d2d2d;
+    --bg-elevated: #333333;
+    --bg-primary-rgb: 30, 30, 30;
+    --bg-secondary-rgb: 37, 37, 37;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --text-light: #808080;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --cancel-color: #495057;
+    --cancel-dark: #343a40;
+  }
+
+  html,
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+
+  .section {
+    background-color: #2c2c2c;
+    border-color: #3c3c3c;
+  }
+
+  .power-control-system {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+  }
+
+  input[type="number"],
+  select,
+  textarea {
+    background-color: #3c3c3c;
+    color: #e0e0e0;
+    border-color: #4c4c4c;
+  }
+
+  textarea::placeholder {
+    color: #adb5bd;
+  }
+
+  .status-dot {
+    background-color: red;
+  }
+
+  .status-dot.connected {
+    background-color: green;
+  }
+
+  .output-parameters .value {
+    color: #007bff;
+  }
+
+  .error {
+    color: red;
+  }
 }
 
-.value-animation.fade-in {
-  animation: fadeInOut 0.4s ease-in-out forwards;
+/* 响应式布局 */
+@media (max-width: 1440px) {
+  .power-control-system {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .power-control-system {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .power-control-system {
+    grid-template-columns: 1fr;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .section {
+    padding: 10px;
+  }
+
+  .output-grid {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    padding: 10px 15px;
+    font-size: 0.9em;
+  }
+
+  input[type="number"],
+  select {
+    padding: 8px 10px;
+    font-size: 0.9em;
+  }
+
+  .status-section .port-config {
+    padding: 15px;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .connection-status {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .connect-btn {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+@media (min-width: 1400px) {
+  .power-control-system {
+    gap: 25px;
+  }
 }
 </style>
