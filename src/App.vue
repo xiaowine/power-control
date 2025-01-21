@@ -306,7 +306,6 @@ button:active {
 }
 
 .power-control-system {
-  font-family: Arial, sans-serif;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--grid-gap);
