@@ -74,10 +74,6 @@
   transition: transform 0.3s ease;
 }
 
-.github-icon:hover {
-  transform: scale(1.2);
-}
-
 /* 作者名称样式 */
 .author-name {
   margin-top: 15px;

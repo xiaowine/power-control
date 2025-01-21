@@ -161,7 +161,7 @@ const clearDataHistory = (): void => {
   emit("clearDataHistoryEvent");
 };
 </script>
-<style scoped>
+<style>
 /* 数据详情面板 */
 .data-detail {
   padding: 10px 20px 10px 10px;
