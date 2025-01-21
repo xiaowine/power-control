@@ -43,6 +43,7 @@
     />
     <About />
   </div>
+  <div id="version">{{ config.version }}</div>
 </template>
 
 <script setup lang="ts">
@@ -55,6 +56,7 @@ import PowerStatus from "@/components/PowerStatus.vue";
 import Historical from "@/components/Historical.vue";
 import About from "@/components/About.vue";
 import { calculateChecksum } from "./utils/tools";
+import config from "../package.json";
 
 const device = ref();
 const output = ref();
@@ -385,6 +387,13 @@ h3 {
   margin-left: 2px;
   color: var(--text-secondary);
 }
+#version {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.8em;
+  color: var(--text-secondary);
+}
 
 /* 深色模式 */
 @media (prefers-color-scheme: dark) {
@@ -462,6 +471,7 @@ h3 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 768px) {
   .power-control-system {
     grid-template-columns: 1fr;
