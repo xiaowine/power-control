@@ -210,12 +210,12 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* 改为顶部对齐 */
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
@@ -223,6 +223,8 @@ body {
 body {
   display: flex;
   flex-direction: column;
+  padding-top: 20px; /* 添加顶部间距 */
+  padding-bottom: 20px; /* 添加底部间距 */
 }
 
 /* 输入控件样式 */
@@ -295,20 +297,12 @@ button:active {
 
 /* 布局容器样式 */
 .section {
-  border: 1px solid var(--border-color);
   border-radius: 10px;
   background: var(--bg-primary);
   background: rgba(var(--bg-primary-rgb), 0.8);
   backdrop-filter: blur(10px);
   padding: var(--section-padding);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.3s var(--animate-timing),
-    box-shadow 0.3s var(--animate-timing);
-}
-
-.section:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .power-control-system {
@@ -459,12 +453,8 @@ h3 {
   .error {
     color: red;
   }
-}
-
-/* 响应式布局 */
-@media (max-width: 1440px) {
-  .power-control-system {
-    grid-template-columns: repeat(3, 1fr);
+  h3 {
+    color: var(--text-secondary);
   }
 }
 
@@ -473,54 +463,9 @@ h3 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
 @media (max-width: 768px) {
   .power-control-system {
     grid-template-columns: 1fr;
-    padding: 10px;
-    gap: 10px;
-  }
-
-  .section {
-    padding: 10px;
-  }
-
-  .output-grid {
-    grid-template-columns: 1fr;
-  }
-
-  button {
-    padding: 10px 15px;
-    font-size: 0.9em;
-  }
-
-  input[type="number"],
-  select {
-    padding: 8px 10px;
-    font-size: 0.9em;
-  }
-
-  .status-section .port-config {
-    padding: 15px;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .connection-status {
-    width: 100%;
-    justify-content: center;
-    padding: 8px 0;
-  }
-
-  .connect-btn {
-    width: 100%;
-    min-width: unset;
-  }
-}
-
-@media (min-width: 1400px) {
-  .power-control-system {
-    gap: 25px;
   }
 }
 </style>

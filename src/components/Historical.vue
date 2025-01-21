@@ -348,18 +348,4 @@ const clearDataHistory = (): void => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 }
-
-/* 响应式布局 */
-@media (max-width: 768px) {
-  .clear-btn {
-    right: 16px;
-    bottom: 16px;
-    width: 40px;
-    height: 40px;
-  }
-
-  .clear-btn::before {
-    font-size: 24px;
-  }
-}
 </style>

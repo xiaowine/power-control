@@ -178,31 +178,6 @@ const clearError = () => {
   box-shadow: 0 2px 4px rgba(var(--success-color-rgb), 0.2);
 }
 
-/* 响应式调整 */
-@media (max-width: 1200px) {
-  .status-tabs {
-    flex-direction: column; /* 在较小屏幕上改回垂直布局 */
-  }
-
-  .status-tab {
-    min-width: unset;
-  }
-}
-
-@media (max-width: 768px) {
-  .status-tab {
-    padding: 10px;
-  }
-
-  .status-label {
-    font-size: 0.85em;
-  }
-
-  .status-option {
-    padding: 3px 8px;
-    font-size: 0.8em;
-  }
-}
 /* 电源状态样式 */
 .power-status > div {
   margin: 0 auto;

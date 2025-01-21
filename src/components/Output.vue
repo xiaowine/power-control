@@ -121,28 +121,7 @@ defineExpose({ updateOutputVoltage, updateOutputCurrent });
 }
 
 .output-section .card {
-  min-height: 100px;
+  min-height: 80px;
   margin-bottom: 0;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .card {
-    padding: 16px;
-    min-height: 90px;
-  }
-
-  .value-display {
-    font-size: 2em;
-  }
-
-  .value-display small {
-    font-size: 0.5em;
-  }
-
-  .output-section .card-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
 }
 </style>

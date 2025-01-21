@@ -224,19 +224,6 @@ const showSettingDialog = (type: "voltage" | "current") => {
   text-align: center;
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .target-settings {
-    padding: 15px;
-  }
-
-  .target-group {
-    grid-template-columns: 1fr;
-  }
-
-  /* ... 其他响应式样式 */
-}
-
 /* 控制组样式 */
 .control-group {
   display: flex;
@@ -331,29 +318,6 @@ const showSettingDialog = (type: "voltage" | "current") => {
   .mode-controls {
     background: rgba(var(--bg-secondary-rgb), 0.3);
   }
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .control-group {
-    gap: 12px;
-  }
-
-  .power-controls {
-    flex-direction: column;
-  }
-
-  .power-btn {
-    padding: 10px 20px;
-  }
-
-  .mode-controls button {
-    padding: 6px 12px;
-  }
-}
-
-/* 深色模式下图标显示为白色 */
-@media (prefers-color-scheme: dark) {
   .power-icon {
     filter: brightness(0) invert(1); /* 将黑色图标转换为白色 */
   }
