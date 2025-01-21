@@ -4,8 +4,26 @@
     <div class="avatar-container">
       <div class="avatar-image"></div>
     </div>
-    <a href="https://github.com/xiaowine" target="_blank" class="github-icon">
-    </a>
+    <div class="social-links">
+      <a
+        href="https://github.com/xiaowine"
+        target="_blank"
+        class="social-icon github-icon"
+      >
+      </a>
+      <a
+        href="https://space.bilibili.com/393492876"
+        target="_blank"
+        class="social-icon bilibili-icon"
+      >
+      </a>
+      <a
+        href="https://oshwhub.com/xiao_wine"
+        target="_blank"
+        class="social-icon jlc-icon"
+      >
+      </a>
+    </div>
     <div class="author-name">xiao_wine</div>
   </div>
 </template>
@@ -64,19 +82,42 @@
   transition: all 0.3s ease;
 }
 
-/* GitHub 图标样式 */
-.github-icon {
+/* 社交图标容器 */
+.social-links {
   z-index: 2;
+  display: flex;
+  gap: 20px;
+  margin: 20px auto;
+}
+
+/* 社交图标通用样式 */
+.social-icon {
   width: 32px;
   height: 32px;
-  margin: 20px auto;
-  background: url("../assets/github.svg") center center no-repeat;
   background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
   filter: brightness(0) invert(1);
   transition: transform 0.3s ease;
 }
-.github-icon:hover {
+
+.social-icon:hover {
   transform: scale(1.2);
+}
+
+/* GitHub图标 */
+.github-icon {
+  background-image: url("../assets/github.svg");
+}
+
+/* Bilibili图标 */
+.bilibili-icon {
+  background-image: url("../assets/bilibili.svg");
+}
+
+/* Email图标 */
+.jlc-icon {
+  background-image: url("../assets/jlc.svg");
 }
 
 /* 作者名称样式 */
