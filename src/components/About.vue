@@ -59,7 +59,7 @@
 .avatar-image {
   width: 100%;
   height: 100%;
-  background: url("../assets/avatar.jpg") center center no-repeat;
+  background: url("../assets/avatar.png") center center no-repeat;
   background-size: cover;
   transition: all 0.3s ease;
 }
