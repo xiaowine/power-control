@@ -1,68 +1,3 @@
-/* 全局样式 */
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-x: hidden;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-.power-control-system {
-  font-family: Arial, sans-serif;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 默认三列布局 */
-  gap: var(--grid-gap);
-  padding: var(--container-padding);
-  width: 100%;
-  max-width: 1440px;
-  margin: 20px auto;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  box-sizing: border-box;
-  border-radius: 12px;
-  box-shadow: var(--shadow-lg);
-  grid-auto-flow: dense; /* 自动填充空白区域 */
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* 模块容器样式 */
-.section {
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: var(--bg-primary);
-  background: rgba(var(--bg-primary-rgb), 0.8);
-  backdrop-filter: blur(10px);
-  padding: var(--section-padding);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.3s var(--animate-timing),
-    box-shadow 0.3s var(--animate-timing);
-}
-
-.section:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-/* 标题样式 */
-h3 {
-  margin: 0 0 15px;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: var(--text-primary);
-  padding-bottom: 8px;
-}
-
 /* 表单布局和间距 */
 label {
   display: flex;
@@ -207,16 +142,6 @@ button + button {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .power-control-system {
-    grid-template-columns: 1fr; /* 小屏幕单列布局 */
-    padding: 10px;
-    gap: 10px; /* 减少模块间距 */
-  }
-
-  .section {
-    padding: 10px; /* 缩小模块内边距 */
-  }
-
   button {
     padding: 10px 15px; /* 缩小按钮内边距 */
     font-size: 0.9em; /* 缩小按钮字体 */
@@ -229,34 +154,12 @@ button + button {
   }
 }
 
-@media (max-width: 1200px) {
-  .power-control-system {
-    grid-template-columns: 1fr 1fr; /* 中等屏幕双列布局 */
-  }
-}
-
-@media (min-width: 1400px) {
-  .power-control-system {
-    gap: 25px; /* 增加模块间距 */
-  }
-}
-
 /* 深色模式支持 */
 @media (prefers-color-scheme: dark) {
   html,
   body {
     background-color: #121212; /* 背景色 */
     color: #e0e0e0; /* 字体颜色 */
-  }
-
-  .power-control-system {
-    background-color: #1e1e1e; /* 背景色 */
-    color: #e0e0e0; /* 字体颜色 */
-  }
-
-  .section {
-    background-color: #2c2c2c; /* 背景色 */
-    border-color: #3c3c3c; /* 边框颜色 */
   }
 
   h3 {
@@ -310,124 +213,6 @@ button + button {
   textarea::placeholder {
     color: #adb5bd; /* 提示文字颜色 */
   }
-}
-
-.info {
-  height: 21rem; /* 增加高度 */
-  max-height: 21rem; /* 同步增加最大高度 */
-  overflow-y: auto;
-  overflow-x: hidden;
-  border: 1px solid var(--border-color);
-  padding: 12px 16px;
-  list-style-type: none;
-  word-wrap: break-word;
-  word-break: break-all;
-  box-sizing: border-box;
-  background: linear-gradient(
-    145deg,
-    rgba(var(--bg-primary-rgb), 0.6),
-    rgba(var(--bg-secondary-rgb), 0.8)
-  );
-  border-radius: 8px;
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-sm);
-  margin: 0;
-}
-
-/* 优化列表项样式 */
-.info li {
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background: rgba(var(--bg-primary-rgb), 0.4);
-  word-break: break-word;
-  display: flex;
-  align-items: flex-start;
-  animation: slideIn 0.3s ease-out;
-  transform-origin: top;
-  cursor: pointer;
-  transition: all 0.2s var(--animate-timing);
-}
-
-.info li:last-child {
-  margin-bottom: 0;
-}
-
-.info li:hover {
-  background: rgba(var(--bg-primary-rgb), 0.6);
-  transform: translateX(4px);
-  box-shadow: var(--shadow-sm);
-}
-
-/* 发送/接收标签样式优化 */
-.info li .type {
-  font-weight: 500;
-  margin-right: 12px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.85em;
-  min-width: 40px;
-  text-align: center;
-}
-
-.info li.sent .type {
-  background: rgba(var(--success-color-rgb), 0.1);
-  color: var(--success-color);
-}
-
-.info li.received .type {
-  background: rgba(var(--primary-color-rgb), 0.1);
-  color: var(--primary-color);
-}
-
-/* 消息内容样式优化 */
-.info li .message {
-  flex: 1;
-  line-height: 1.4;
-  color: var(--text-primary);
-  font-family: monospace;
-  font-size: 1.1em;
-  font-weight: 600;
-}
-
-/* 滚动条样式优化 */
-.info::-webkit-scrollbar {
-  width: 6px;
-}
-
-.info::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 4px;
-}
-
-.info::-webkit-scrollbar-thumb {
-  background: rgba(var(--text-secondary-rgb), 0.3);
-  border-radius: 4px;
-}
-
-.info::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--text-secondary-rgb), 0.5);
-}
-
-/* 添加新消息时的动画 */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 在 :root 中添加文本色的 RGB 值 */
-:root {
-  /* 已有的量... */
-  --text-secondary-rgb: 127, 140, 141; /* #7f8c8d 的 RGB 值 */
-  --cancel-color: #6c757d;
-  --cancel-dark: #5a6268;
 }
 
 /* 深色模式适配 */
@@ -741,176 +526,6 @@ html {
   }
 }
 
-/* 响应式布局优化 */
-@media (max-width: 1440px) {
-  .power-control-system {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 1024px) {
-  .power-control-system {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .power-control-system {
-    grid-template-columns: 1fr;
-  }
-
-  .section {
-    padding: 16px;
-  }
-
-  .output-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* 打印模式优化 */
-@media print {
-  .power-control-system {
-    display: block;
-  }
-
-  .section {
-    page-break-inside: avoid;
-    margin-bottom: 20px;
-  }
-
-  button {
-    display: none;
-  }
-}
-
-/* 相关部分样式 */
-.section.about {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  text-align: center;
-  background-image: url("https://sourcebucket.s3.bitiful.net/img/aurora.webp");
-  border-radius: var(--border-radius);
-  overflow: hidden;
-}
-
-.avatar-container {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 20px auto;
-  border: 4px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-}
-
-.avatar-image {
-  width: 100%;
-  height: 100%;
-  background: url("../assets/avatar.jpg") center center no-repeat;
-  background-size: cover;
-  transition: transform 0.3s ease;
-}
-
-.avatar-container:hover .avatar-image {
-  transform: scale(1.1);
-}
-
-.github-icon {
-  width: 32px;
-  height: 32px;
-  margin: 20px auto;
-  opacity: 1;
-  background: url("../assets/github.svg") center center no-repeat;
-  background-size: contain;
-  filter: brightness(0) invert(1);
-  transition: transform 0.3s ease;
-}
-
-.github-icon:hover {
-  transform: scale(1.2);
-}
-
-.author-name {
-  margin-top: 15px;
-  font-size: 1.5em;
-  font-weight: 600;
-  letter-spacing: 1px;
-  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 50%, #4facfe 100%);
-  background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: rgb-text 8s linear infinite;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 1;
-}
-
-/* 调整动画速度和效果 */
-@keyframes rgb-text {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
-  }
-}
-
-/* 深色模式优化 */
-@media (prefers-color-scheme: dark) {
-  .author-name {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-  }
-
-  .author-name:hover {
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-  }
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .section:last-child {
-    min-height: 250px;
-  }
-
-  .avatar-container {
-    width: 100px;
-    height: 100px;
-    margin: 15px auto;
-  }
-
-  .github-icon {
-    width: 28px;
-    height: 28px;
-    margin: 15px auto;
-  }
-
-  .author-name {
-    font-size: 1.3em;
-  }
-}
-
-/* 添加背景渐变遮罩以提高文字可读性 */
-.section:last-child::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.2),
-    rgba(0, 0, 0, 0.3)
-  );
-  z-index: 0;
-}
-
 /* 修改动画相关样式 */
 .output-value-container {
   position: relative;
@@ -967,38 +582,6 @@ html {
 
 .output-value-animation.fade-in {
   animation: fadeInOut 0.4s ease-in-out forwards;
-}
-
-/* 数据详情样式 */
-.data-detail {
-  padding: 10px;
-  padding-right: 20px;
-}
-
-.detail-item {
-  margin-bottom: 15px;
-  display: flex;
-  align-items: flex-start;
-  padding-left: 10px;
-}
-
-.detail-label {
-  font-weight: bold;
-  min-width: 80px;
-  color: var(--text-secondary);
-}
-
-.detail-value {
-  flex: 1;
-  word-break: break-all;
-  line-height: 1.5;
-}
-
-/* 数据解释的样式 */
-.detail-value span {
-  display: block;
-  color: var(--primary-color);
-  font-size: 0.95em;
 }
 
 /* 电源状态新样式 */
@@ -1123,106 +706,12 @@ html {
 }
 
 /* 统一过渡效果 */
-.section,
 .output-card,
 .status-tab,
 .port-config,
 .info,
 .status-option {
   transition: all 0.3s var(--animate-timing);
-}
-
-/* 清除按钮样式 */
-.info-container {
-  position: relative; /* 为悬浮按钮提供定位上下文 */
-}
-
-.clear-btn {
-  position: absolute;
-  right: 30px;
-  bottom: 10px;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s var(--animate-timing);
-  z-index: 10;
-}
-
-.clear-btn:hover {
-  transform: scale(1.1) rotate(90deg);
-  background: var(--primary-dark);
-  box-shadow: var(--shadow-lg);
-}
-
-.clear-btn:active {
-  transform: scale(0.95);
-}
-
-/* 添加清除图标 */
-.clear-btn::before {
-  content: "×";
-  font-size: 28px;
-  font-weight: bold;
-  line-height: 1;
-}
-
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .clear-btn {
-    background: var(--primary-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .clear-btn:hover {
-    background: var(--primary-dark);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  }
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .clear-btn {
-    width: 40px;
-    height: 40px;
-    right: 16px;
-    bottom: 16px;
-  }
-
-  .clear-btn::before {
-    font-size: 24px;
-  }
-}
-
-/* 添加动态 RGB 渐变动画 */
-@keyframes hue-rotate {
-  0% {
-    filter: hue-rotate(0deg);
-  }
-  100% {
-    filter: hue-rotate(360deg);
-  }
-}
-
-@keyframes rgb-text {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }
 
 /* 输入参数样式 */
@@ -1449,15 +938,6 @@ html {
 
 .cancel-btn:active {
   transform: scale(0.95);
-}
-
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* ... 其他深色模式变量 ... */
-    --cancel-color: #495057;
-    --cancel-dark: #343a40;
-  }
 }
 
 /* 控制组样式 */
