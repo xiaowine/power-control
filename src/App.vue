@@ -61,12 +61,12 @@ import config from "../package.json";
 const device = ref();
 const output = ref();
 
-const inputVoltage = ref<number>(24.0);
-const inputCurrent = ref<number>(5.0);
-const outputVoltage = ref<number>(24.0);
-const outputCurrent = ref<number>(5.0);
-const targetVoltage = ref<number>(20.0);
-const targetCurrent = ref<number>(4.0);
+const inputVoltage = ref<number>(0);
+const inputCurrent = ref<number>(0);
+const outputVoltage = ref<number>(0);
+const outputCurrent = ref<number>(0);
+const targetVoltage = ref<number>(0);
+const targetCurrent = ref<number>(0);
 
 const workStatus = ref<number>(0);
 const runMode = ref<number>(0); //buck boost mix

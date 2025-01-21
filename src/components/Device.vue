@@ -58,15 +58,15 @@ import { showAlert } from "@/utils/dialog";
 import { formatNumber, dataParse, calculateChecksum } from "@/utils/tools";
 import { REALITY_I, REALITY_V, ReportType } from "@/types";
 
-defineProps<{
+const props = defineProps<{
   inputVoltage: number;
   inputCurrent: number;
 }>();
 
 const emit = defineEmits();
 
-const oldInputVoltage = ref<number>(24.0);
-const oldInputCurrent = ref<number>(5.0);
+const oldInputVoltage = ref<number>(props.inputVoltage);
+const oldInputCurrent = ref<number>(props.inputCurrent);
 
 // 设备连接状态
 const device = ref<SerialPort>();

@@ -53,19 +53,19 @@
 import { ref } from "vue";
 import { formatNumber, formatValue } from "@/utils/tools";
 
-const oldVoltage = ref<number>(24.0);
-const oldCurrent = ref<number>(5.0);
-const efficiency = ref<number>(0.0);
-const power = ref<number>(0.0);
-const voltageAnimation = ref<HTMLElement>();
-const currentAnimation = ref<HTMLElement>();
-
 const props = defineProps<{
   inputVoltage: number;
   inputCurrent: number;
   outputVoltage: number;
   outputCurrent: number;
 }>();
+
+const oldVoltage = ref<number>(props.inputVoltage);
+const oldCurrent = ref<number>(props.inputCurrent);
+const efficiency = ref<number>(0.0);
+const power = ref<number>(0.0);
+const voltageAnimation = ref<HTMLElement>();
+const currentAnimation = ref<HTMLElement>();
 
 const updateOutputVoltage = (newValue: number): void => {
   const old = oldVoltage;
