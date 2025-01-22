@@ -388,11 +388,12 @@ h3 {
   color: var(--text-secondary);
 }
 #version {
-  position: absolute;
+  position: fixed; /* 改为固定定位 */
   bottom: 10px;
   right: 10px;
   font-size: 0.8em;
   color: var(--text-secondary);
+  z-index: 1000; /* 添加z-index确保显示在其他内容之上 */
 }
 
 /* 深色模式 */
