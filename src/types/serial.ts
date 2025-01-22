@@ -1,26 +1,41 @@
+export interface SerialPortOptions {
+  baudRate: number;
+  dataBits?: number;
+  stopBits?: number;
+  parity?: string;
+  bufferSize?: number;
+  flowControl?: string;
+}
 export interface SerialOptions {
-	baudRate: number;
-	dataBits?: number;
-	stopBits?: number;
-	parity?: string;
-	bufferSize?: number;
-	flowControl?: string;
+  filters?: SerialPortFilter[];
+}
+
+export interface SerialPortFilter {
+  usbVendorId?: number;
+  usbProductId?: number;
 }
 
 export interface SerialPort {
-	readable: ReadableStream<Uint8Array>;
-	writable: WritableStream<Uint8Array>;
-	open(options: SerialOptions): Promise<void>;
-	close(): Promise<void>;
+  readable: ReadableStream<Uint8Array>;
+  writable: WritableStream<Uint8Array>;
+  open(options: SerialPortOptions): Promise<void>;
+  close(): Promise<void>;
 }
 
 interface Serial {
-	requestPort(): Promise<SerialPort>;
-	getPorts(): Promise<SerialPort[]>;
+  addEventListener: (
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => void;
+
+  requestPort(): Promise<SerialPort>;
+  requestPort(options?: SerialOptions): Promise<SerialPort>;
+  getPorts(): Promise<SerialPort[]>;
 }
 
 declare global {
-	interface Navigator {
-		serial: Serial;
-	}
+  interface Navigator {
+    serial: Serial;
+  }
 }

@@ -76,7 +76,9 @@ const isConnected = ref<boolean>(false);
 let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
 let buffer: number[] = [];
 let serialTimer = 0;
-
+navigator.serial.addEventListener("disconnect", (e) => {
+  console.log("设备已断开:", e);
+});
 const toggleConnection = async (): Promise<void> => {
   if (!("serial" in navigator)) {
     showAlert("浏览器不支持串口通信");
@@ -91,7 +93,11 @@ const toggleConnection = async (): Promise<void> => {
 
 const connectDevice = async (): Promise<void> => {
   try {
-    device.value = await navigator.serial.requestPort();
+    device.value = await navigator.serial.requestPort({
+      filters: [{ usbVendorId: 0x0483 }],
+    });
+    console.log(device.value);
+
     await device.value.open({ baudRate: 115200 });
     isConnected.value = true;
     startReading();
@@ -122,6 +128,12 @@ const disconnectDevice = async (): Promise<void> => {
   }
 };
 
+navigator.serial.addEventListener("disconnect", (e) => {
+  console.log("设备已断开:", e);
+  disconnectDevice();
+  showAlert("设备已经断开连接");
+});
+
 const startReading = async (): Promise<void> => {
   if (!device.value?.readable) return;
   reader = device.value.readable.getReader();
@@ -140,8 +152,6 @@ const startReading = async (): Promise<void> => {
     }
   } catch (error) {
     console.error("读取数据错误:", error);
-    showAlert("数据读取错误，连接已断开");
-    disconnectDevice();
   } finally {
     reader?.releaseLock();
   }
