@@ -283,18 +283,13 @@ button:disabled {
 button:active {
   transform: scale(0.95);
 }
-
-.cancel-btn {
-  background-color: var(--cancel-color);
-}
-
-.cancel-btn:hover {
-  background-color: var(--cancel-dark);
-  transform: scale(1.05);
-}
-
-.cancel-btn:active {
-  transform: scale(0.95);
+/* 标题和文本样式 */
+h3 {
+  margin: 0 0 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--text-primary);
+  padding-bottom: 8px;
 }
 
 /* 布局容器样式 */
@@ -322,15 +317,6 @@ button:active {
   box-shadow: var(--shadow-lg);
   grid-auto-flow: dense;
   animation: fadeIn 0.5s ease-out;
-}
-
-/* 标题和文本样式 */
-h3 {
-  margin: 0 0 15px;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: var(--text-primary);
-  padding-bottom: 8px;
 }
 
 /* 卡片样式 */
@@ -387,6 +373,7 @@ h3 {
   margin-left: 2px;
   color: var(--text-secondary);
 }
+
 #version {
   position: fixed; /* 改为固定定位 */
   bottom: 10px;
