@@ -1,5 +1,5 @@
 <template>
-  <div class="power-control-system">
+  <div class="power-control-system fade-in">
     <Device
       ref="device"
       :inputCurrent="inputCurrent"
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import { type DataHistoryItem, type FunctionType } from "@/types";
 import Device from "@/components/Device.vue";
 import Output from "@/components/Output.vue";
@@ -76,9 +76,6 @@ const runMode = ref<number>(0); //buck boost mix
 const outMode = ref<number>(0); // cc cv
 const runErrorType = ref<number>(0);
 const dataHistory = ref<DataHistoryItem[]>([]);
-
-// ===== 生命周期钩子 =====
-onMounted(() => {});
 
 onBeforeUnmount(() => {
   device.value.disconnectDevice();
@@ -471,6 +468,25 @@ h3 {
 @media (max-width: 768px) {
   .power-control-system {
     grid-template-columns: 1fr;
+  }
+}
+
+/* 页面淡入动画 */
+.fade-in {
+  animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: translate3d(0, 30px, 0) scale(0.98);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 </style>
