@@ -2,6 +2,8 @@
 
 一个基于 Vue 3 的电源控制面板项目，用于监控和控制电源设备。
 
+🌐 在线预览: [https://power.xiaowine.cc/](https://power.xiaowine.cc/)
+
 ## 功能特性
 
 - 💡 实时监控电压/电流数据
@@ -116,3 +118,7 @@ power-control/
 ## 作者
 
 xiao_wine - [@github](https://github.com/xiaowine)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=xiaowine/power-control&type=Date)](https://star-history.com/#xiaowine/power-control&Date)
