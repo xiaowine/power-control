@@ -4,7 +4,10 @@
     <div class="port-config">
       <div class="connection-status">
         <i class="status-icon" :class="{ connected: isConnected }"></i>
-        <span>{{ device === undefined ? "未连接" : "已连接" }}</span>
+        <div class="device-info">
+          <span>{{ device === undefined ? "未连接" : "已连接" }}</span>
+          <div v-if="deviceName" class="device-name">{{ deviceName }}</div>
+        </div>
       </div>
       <button class="connect-btn" @click="toggleConnection">
         {{ isConnected ? "断开连接" : "选择设备" }}
@@ -56,11 +59,12 @@ import type { SerialPort } from "@/types/serial";
 import { ref } from "vue";
 import { showAlert } from "@/utils/dialog";
 import { formatNumber, dataParse, calculateChecksum } from "@/utils/tools";
-import { REALITY_I, REALITY_V, ReportType } from "@/types";
+import { FunctionType, REALITY_I, REALITY_V, ReportType } from "@/types";
 
 const props = defineProps<{
   inputVoltage: number;
   inputCurrent: number;
+  deviceName: string;
 }>();
 
 const emit = defineEmits();
@@ -76,9 +80,9 @@ const isConnected = ref<boolean>(false);
 let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
 let buffer: number[] = [];
 let serialTimer = 0;
-navigator.serial.addEventListener("disconnect", (e) => {
-  console.log("设备已断开:", e);
-});
+// 添加临时存储设备名称的变量
+let unicodeArray: number[] = [];
+
 const toggleConnection = async (): Promise<void> => {
   if (!("serial" in navigator)) {
     showAlert("浏览器不支持串口通信");
@@ -96,10 +100,22 @@ const connectDevice = async (): Promise<void> => {
     device.value = await navigator.serial.requestPort({
       filters: [{ usbVendorId: 0x0483 }],
     });
-    console.log(device.value);
-
     await device.value.open({ baudRate: 115200 });
     isConnected.value = true;
+
+    const data = new Uint8Array([
+      FunctionType.ASK_DEVICE_NAME & 0xff,
+      (FunctionType.ASK_DEVICE_NAME >> 8) & 0xff,
+      0,
+      0,
+      0,
+      0,
+    ]);
+
+    const checksum = calculateChecksum(data);
+    data[4] = checksum & 0xff;
+    data[5] = (checksum >> 8) & 0xff;
+    sendData(data, 0, "设备名称");
     startReading();
   } catch (error) {
     console.error("未选择设备或者串口连接失败:", error);
@@ -117,6 +133,7 @@ const disconnectDevice = async (): Promise<void> => {
     if (device.value) {
       await device.value.close();
     }
+    emit("updateDeviceName", "");
   } catch (error) {
     console.error("断开连接错误:", error);
   } finally {
@@ -132,6 +149,7 @@ navigator.serial.addEventListener("disconnect", (e) => {
   console.log("设备已断开:", e);
   disconnectDevice();
   showAlert("设备已经断开连接");
+  emit("updateDeviceName", "");
 });
 
 const startReading = async (): Promise<void> => {
@@ -156,6 +174,11 @@ const startReading = async (): Promise<void> => {
     reader?.releaseLock();
   }
 };
+
+function parseDeviceNameSimple(byteArray: number[]): string {
+  const validBytes = byteArray.slice(0, -1);
+  return validBytes.map((byte) => String.fromCharCode(byte & 0xff)).join("");
+}
 
 const processBuffer = (): void => {
   clearTimeout(serialTimer);
@@ -200,6 +223,18 @@ const processBuffer = (): void => {
       },
       [ReportType.TargetI]: () => {
         emit("updateTargetIEvent", newValue * REALITY_I);
+      },
+      [ReportType.DEVICE_NAME_START]: () => {
+        unicodeArray = [];
+        emit("updateDeviceName", "加载中...");
+      },
+      [ReportType.DEVICE_NAME]: () => {
+        unicodeArray.push(newValue);
+      },
+      [ReportType.DEVICE_NAME_END]: () => {
+        const text = parseDeviceNameSimple(unicodeArray);
+        emit("updateDeviceName", text);
+        unicodeArray = [];
       },
     };
 
@@ -259,7 +294,7 @@ defineExpose({ disconnectDevice, sendData });
   white-space: nowrap; /* 防止文字换行 */
 }
 
-/* 状态��标样式优化 */
+/* 状态图标样式优化 */
 .status-icon {
   position: relative;
   width: 16px;
@@ -317,5 +352,19 @@ defineExpose({ disconnectDevice, sendData });
   min-width: 120px; /* 增加最小宽度 */
   white-space: nowrap;
   flex-shrink: 0; /* 止 */
+}
+
+.device-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left; /* 添加左对齐 */
+  min-width: 0; /* 确保容器可以收缩 */
+  flex: 1; /* 允许占据剩余空间 */
+}
+
+.device-name {
+  font-size: 0.8em;
+  color: var(--text-secondary);
 }
 </style>

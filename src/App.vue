@@ -4,6 +4,7 @@
       ref="device"
       :inputCurrent="inputCurrent"
       :inputVoltage="inputVoltage"
+      :deviceName="deviceName"
       @updateOutputVoltageEvent="updateOutputVoltage"
       @updateOutputCurrentEvent="updateOutputCurrent"
       @updateInputVoltageEvent="updateInputVoltage"
@@ -15,6 +16,7 @@
       @updateEnEvent="updateEn"
       @updateTargetVEvent="updateTargetV"
       @updateTargetIEvent="updateTargetI"
+      @updateDeviceName="updateDeviceName"
     />
     <Output
       ref="output"
@@ -60,6 +62,7 @@ import config from "../package.json";
 
 const device = ref();
 const output = ref();
+const deviceName = ref<string>("");
 
 const inputVoltage = ref<number>(0);
 const inputCurrent = ref<number>(0);
@@ -80,6 +83,11 @@ onMounted(() => {});
 onBeforeUnmount(() => {
   device.value.disconnectDevice();
 });
+
+const updateDeviceName = (name: string): void => {
+  deviceName.value = name;
+};
+
 const clearDataHistory = (): void => {
   dataHistory.value = [];
 };
